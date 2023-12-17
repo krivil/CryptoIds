@@ -1,0 +1,18 @@
+@CryptoIds.Websites.Api_HostAddress = http://localhost:5028
+
+GET {{CryptoIds.Websites.Api_HostAddress}}/?from=1&to=100
+Accept: application/json
+
+###
+
+
+GET {{CryptoIds.Websites.Api_HostAddress}}/int/64
+Accept: application/json
+
+###
+
+
+GET {{CryptoIds.Websites.Api_HostAddress}}/crypto-int/BPJ4JGNg_mk
+Accept: application/json
+
+###

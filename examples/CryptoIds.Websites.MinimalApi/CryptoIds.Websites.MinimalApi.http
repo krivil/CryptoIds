@@ -1,0 +1,6 @@
+@CryptoIds.Websites.MinimalApi_HostAddress = http://localhost:5107
+
+GET {{CryptoIds.Websites.MinimalApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
