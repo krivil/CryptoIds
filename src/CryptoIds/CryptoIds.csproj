@@ -15,6 +15,10 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/krivil/CryptoIds</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
+    <PackageTags>Databse;Id;Cryptography;REST;Api;Storage;Security</PackageTags>
+    <Description>
+      This client library enables working with database sequential ids in a secure way.
+    </Description>
   </PropertyGroup>
 
   <ItemGroup>
