@@ -1,6 +1,6 @@
 namespace CryptoIds.Websites.Api.Controllers;
 
-using CryptoIds.Core;
+using CryptoIds;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]

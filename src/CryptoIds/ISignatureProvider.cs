@@ -1,6 +1,6 @@
-﻿namespace CryptoIds.Core;
+﻿namespace CryptoIds;
 
-using CryptoIds.Core.Signature;
+using CryptoIds.Signature;
 
 public interface ISignatureProvider
 {

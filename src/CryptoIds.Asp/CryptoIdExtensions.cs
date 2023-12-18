@@ -2,7 +2,7 @@
 namespace Microsoft.Extensions.DependencyInjection;
 
 using Microsoft.OpenApi.Models;
-using CryptoIds.Core;
+using CryptoIds;
 
 public static class CryptoIdExtensions
 {

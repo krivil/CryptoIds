@@ -1,15 +1,15 @@
-﻿using System.Runtime.CompilerServices;
+﻿namespace CryptoIds.Signature;
+
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
-namespace CryptoIds.Core.Signature;
-
-public sealed class HmacSha3_384SignatureProvider : ISignatureProvider
+public sealed class HmacSha384SignatureProvider : ISignatureProvider
 {
     private const int ConstSignatureLengthInBytes = 48;
     public static int SignatureLengthInBytes => ConstSignatureLengthInBytes;
 
-    public static readonly HmacSha3_384SignatureProvider Instance = new();
+    public static readonly HmacSha384SignatureProvider Instance = new();
 
     public int SignatureLength => ConstSignatureLengthInBytes;
 
@@ -23,7 +23,7 @@ public sealed class HmacSha3_384SignatureProvider : ISignatureProvider
         Span<byte> buffer = stackalloc byte[Unsafe.SizeOf<T>()];
         Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer), id);
 
-        HMACSHA3_384.TryHashData(key, buffer, destination, out var retVal);
+        HMACSHA384.TryHashData(key, buffer, destination, out var retVal);
         return retVal;
     }
 

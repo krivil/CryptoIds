@@ -1,19 +1,15 @@
-﻿using System.Runtime.CompilerServices;
+﻿namespace CryptoIds.Signature;
+
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
-namespace CryptoIds.Core.Signature;
-
-public sealed class XxHash32SignatureProvider : ISignatureProvider
+public sealed class HmacSha512SignatureProvider : ISignatureProvider
 {
-    private const int ConstSignatureLengthInBytes = sizeof(uint);
-    // ReSharper disable StaticMemberInGenericType - it's fine
-    private static readonly object HasherLock = new();
-    private static readonly System.IO.Hashing.XxHash32 Hasher = new();
-    // ReSharper restore StaticMemberInGenericType
-
-    public static readonly XxHash32SignatureProvider Instance = new();
-
+    private const int ConstSignatureLengthInBytes = 64;
     public static int SignatureLengthInBytes => ConstSignatureLengthInBytes;
+
+    public static readonly HmacSha512SignatureProvider Instance = new();
 
     public int SignatureLength => ConstSignatureLengthInBytes;
 
@@ -27,15 +23,7 @@ public sealed class XxHash32SignatureProvider : ISignatureProvider
         Span<byte> buffer = stackalloc byte[Unsafe.SizeOf<T>()];
         Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer), id);
 
-        int retVal;
-
-        lock (HasherLock)
-        {
-            Hasher.Append(key);
-            Hasher.Append(buffer);
-            retVal = Hasher.GetHashAndReset(destination);
-        }
-
+        HMACSHA512.TryHashData(key, buffer, destination, out var retVal);
         return retVal;
     }
 

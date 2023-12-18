@@ -1,4 +1,4 @@
-﻿namespace CryptoIds.Core;
+﻿namespace CryptoIds;
 
 using System.Security.Cryptography;
 

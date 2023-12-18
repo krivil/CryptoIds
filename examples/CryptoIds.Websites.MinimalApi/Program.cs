@@ -1,4 +1,4 @@
-using CryptoIds.Core;
+using CryptoIds;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);

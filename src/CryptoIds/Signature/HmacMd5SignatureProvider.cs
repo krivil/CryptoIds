@@ -1,8 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿namespace CryptoIds.Signature;
+
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-
-namespace CryptoIds.Core.Signature;
 
 public sealed class HmacMd5SignatureProvider : ISignatureProvider
 {

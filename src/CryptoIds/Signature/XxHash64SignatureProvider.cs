@@ -1,18 +1,19 @@
-﻿namespace CryptoIds.Core.Signature;
+﻿namespace CryptoIds.Signature;
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-public sealed class Crc32SignatureProvider : ISignatureProvider
+public sealed class XxHash64SignatureProvider : ISignatureProvider
 {
-    private const int ConstSignatureLengthInBytes = sizeof(uint);
+    private const int Seed = 681;
+    private const int ConstSignatureLengthInBytes = sizeof(ulong);
     // ReSharper disable StaticMemberInGenericType - it's fine
     private static readonly object HasherLock = new();
-    private static readonly System.IO.Hashing.Crc32 Hasher = new();
+    private static readonly System.IO.Hashing.XxHash64 Hasher = new(seed: Seed);
     // ReSharper restore StaticMemberInGenericType
     public static int SignatureLengthInBytes => ConstSignatureLengthInBytes;
 
-    public static readonly Crc32SignatureProvider Instance = new();
+    public static readonly XxHash64SignatureProvider Instance = new();
 
     public int SignatureLength => ConstSignatureLengthInBytes;
 

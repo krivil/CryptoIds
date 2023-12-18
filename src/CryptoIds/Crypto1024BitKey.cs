@@ -1,4 +1,4 @@
-﻿namespace CryptoIds.Core;
+﻿namespace CryptoIds;
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;

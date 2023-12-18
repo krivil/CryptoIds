@@ -1,15 +1,18 @@
-﻿using System.Runtime.CompilerServices;
+﻿namespace CryptoIds.Signature;
+
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 
-namespace CryptoIds.Core.Signature;
-
-public sealed class HmacSha1SignatureProvider : ISignatureProvider
+public sealed class Crc32SignatureProvider : ISignatureProvider
 {
-    private const int ConstSignatureLengthInBytes = 20;
+    private const int ConstSignatureLengthInBytes = sizeof(uint);
+    // ReSharper disable StaticMemberInGenericType - it's fine
+    private static readonly object HasherLock = new();
+    private static readonly System.IO.Hashing.Crc32 Hasher = new();
+    // ReSharper restore StaticMemberInGenericType
     public static int SignatureLengthInBytes => ConstSignatureLengthInBytes;
 
-    public static readonly HmacSha1SignatureProvider Instance = new();
+    public static readonly Crc32SignatureProvider Instance = new();
 
     public int SignatureLength => ConstSignatureLengthInBytes;
 
@@ -23,7 +26,15 @@ public sealed class HmacSha1SignatureProvider : ISignatureProvider
         Span<byte> buffer = stackalloc byte[Unsafe.SizeOf<T>()];
         Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer), id);
 
-        HMACSHA1.TryHashData(key, buffer, destination, out var retVal);
+        int retVal;
+
+        lock (HasherLock)
+        {
+            Hasher.Append(key);
+            Hasher.Append(buffer);
+            retVal = Hasher.GetHashAndReset(destination);
+        }
+
         return retVal;
     }
 

@@ -1,6 +1,6 @@
 namespace CryptoIds.Websites.Api;
 
-using CryptoIds.Core;
+using CryptoIds;
 
 public record IdDto(CryptoId<int> CryptoInt, CryptoId<long> CryptoLong, CryptoId<(int, long)> CryptoBoth, int Int, long Long)
 {

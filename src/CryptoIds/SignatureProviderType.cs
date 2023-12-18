@@ -1,4 +1,4 @@
-﻿namespace CryptoIds.Core;
+﻿namespace CryptoIds;
 
 public enum SignatureProviderType
 {

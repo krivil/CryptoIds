@@ -1,6 +1,6 @@
 namespace CryptoIds.Tests;
 
-using CryptoIds.Core;
+using CryptoIds;
 
 public class IdOperationsTests
 {

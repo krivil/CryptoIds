@@ -1,8 +1,8 @@
-﻿using System.Reflection;
+﻿namespace CryptoIds;
+
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-
-namespace CryptoIds.Core;
 
 public class CryptoIdJsonConverterFactory : JsonConverterFactory
 {

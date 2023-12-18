@@ -1,8 +1,8 @@
 ﻿namespace CryptoIds.Benchmarks;
 
 using BenchmarkDotNet.Attributes;
-using CryptoIds.Core;
-using CryptoIds.Core.Signature;
+using CryptoIds;
+using CryptoIds.Signature;
 using System.Security.Cryptography;
 
 [MemoryDiagnoser]

@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CryptoIds.Asp\CryptoIds.Asp.csproj" />
-    <ProjectReference Include="..\..\src\CryptoIds.Core\CryptoIds.Core.csproj" />
+    <ProjectReference Include="..\..\src\CryptoIds\CryptoIds.csproj" />
   </ItemGroup>
 
 </Project>
