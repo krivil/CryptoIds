@@ -2,36 +2,21 @@
 
 ## Raison d'etre
 
-Exposing database IDs in a REST API response is generally considered a bad practice. Best practices in API design and security suggest avoiding direct exposure of raw database IDs. Here are some reasons why:
-
- - **Coupling to Database Structure:** Exposing database IDs tightly couples your API to the underlying database schema. If you change your database structure (e.g., switch to a different database system, merge databases, or apply backups), the same IDs may not be available. Using universally unique IDs (UUIDs) or composite keys ensures better decoupling.
-
- - **Predictability:** Sequential database IDs (such as auto-incrementing integers) are predictable. Attackers can guess other resource IDs by incrementing or decrementing them. UUIDs, on the other hand, are harder to predict.
-
- - **Information Leakage:** Exposing raw database IDs may inadvertently reveal information about your system. For example, if a user sees a resource with ID 123, they might assume there are 122 other resources before it.
-
- - **Security by Obscurity:** While security through obscurity is not a strong defense, avoiding direct exposure of database IDs adds an extra layer of protection. It prevents attackers from easily mapping internal database structures.
-
- - **Privacy Concerns:** In some cases, exposing certain IDs (e.g., user IDs) could lead to privacy issues. For instance, if a user’s ID is directly exposed, an attacker could potentially infer their activity or behavior.
+Exposing database IDs in a REST API response is generally considered a bad practice. Best practices in API design and security suggest avoiding direct exposure of raw database IDs. Sometimes UUIDs are used instead of database IDs, but they are not always a good solution. UUIDs are hard to index and are not sortable.
 
 ## Overview
 
 CryptoIds is a C# library designed for ASP.NET Core applications to securely and efficiently obfuscate database IDs. This library is essential for enhancing the security and integrity of APIs by preventing ID enumeration attacks and obscuring the structure of the database.
 
-<!-- ## Benefits of Obscuring Database IDs in ASP.NET Core REST API:
- - **Enhanced Security:** Prevents attackers from inferring the number of records or the structure of your database.
- - **Improved Privacy:** Protects sensitive data from being exposed through predictable IDs.
- - **Data Integrity:** Prevents unauthorized access and manipulation of data by disguising direct database references. -->
-
 ## Features
     
  - **Type Flexibility:** Supports any `unmanaged` type for ID signing and encoding in Base64.
     
-        For more information about unmanaged types, see [this article](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/unmanaged-types).
-        - sbyte, byte, short, ushort, int, uint, long, ulong, nint, nuint, char, float, double, decimal, or bool
-        - Any enum type
-        - Any pointer type
-        - Any user-defined struct type that contains fields of unmanaged types only.
+    For more information about unmanaged types, see [this article](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/unmanaged-types).
+    - sbyte, byte, short, ushort, int, uint, long, ulong, nint, nuint, char, float, double, decimal, or bool
+    - Any enum type
+    - Any pointer type
+    - Any user-defined struct type that contains fields of unmanaged types only, such as tuples.
 
  - **Optional Encryption:** Provides the option to encrypt IDs. Encrypted IDs appear random, enhancing security.
  - **Sortable IDs:** When not encrypted, the library ensures that the resulting strings are sortable, maintaining order consistency.

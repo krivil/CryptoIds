@@ -12,13 +12,12 @@
     <Version>0.1.0-alpha</Version>
     <Authors>krivil</Authors>
     <Description>ASP.NET Core integration for CryptoIds</Description>
+    <RepositoryUrl>https://github.com/krivil/CryptoIds</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/krivil/CryptoIds</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageTags>Databse;Id;Cryptography;REST;Api;Storage;Security</PackageTags>
-    <Description>
-      This client library enables working with CryptoIds in ASP.NET Core applications.
-    </Description>
   </PropertyGroup>
 
   <ItemGroup>
