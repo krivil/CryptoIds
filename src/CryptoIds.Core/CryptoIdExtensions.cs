@@ -6,16 +6,30 @@ using System.Security.Cryptography;
 
 public static class CryptoIdExtensions
 {
-    public static IServiceProvider UseCryptoIds(this IServiceProvider services, string password, bool encrypt = false)
+    public static IServiceProvider UseCryptoIds(
+        this IServiceProvider services,
+        string password,
+        SignatureProviderType signature = SignatureProviderType.XxHash32,
+        bool encrypt = false
+        )
     {
-        CryptoIdContext.Default = CryptoIdContext.CreateFromPassword(password);
+        CryptoIdContext.Default = CryptoIdContext.CreateFromPassword(password, signature, encrypt: encrypt);
         return services;
     }
 
-    public static IServiceProvider UseCryptoIds(this IServiceProvider services, string password, CryptoIdConfigurationOptions options)
+    public static IServiceProvider UseCryptoIds(
+        this IServiceProvider services,
+        string password,
+        CryptoIdConfigurationOptions options
+        )
     {
-        CryptoIdContext.Default = CryptoIdContext.CreateFromPassword(password,
-            options.SignatureProviderType, options.Salt, options.KeyHashAlgorithm, options.KeyHashIterations, options.Encrypt);
+        CryptoIdContext.Default = CryptoIdContext.CreateFromPassword(
+            password,
+            options.SignatureProviderType,
+            options.Salt,
+            options.KeyHashAlgorithm,
+            options.KeyHashIterations,
+            options.Encrypt);
         return services;
     }
 }
