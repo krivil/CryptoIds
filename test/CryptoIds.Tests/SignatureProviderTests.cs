@@ -1,7 +1,5 @@
 namespace CryptoIds.Tests;
 
-using CryptoIds;
-
 public class SignatureProviderTests
 {
     [Fact]
@@ -27,7 +25,7 @@ public class SignatureProviderTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             int id = random.Next();
             TestSignature(provider, id, key);
@@ -57,7 +55,7 @@ public class SignatureProviderTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
             TestSignature(provider, id, key);
@@ -87,10 +85,10 @@ public class SignatureProviderTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             int id = random.Next();
-            TestSignature(provider, id, key); ;
+            TestSignature(provider, id, key);
         });
     }
 
@@ -117,7 +115,7 @@ public class SignatureProviderTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
             TestSignature(provider, id, key);
@@ -147,7 +145,7 @@ public class SignatureProviderTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             int id = random.Next();
             TestSignature(provider, id, key);
@@ -177,7 +175,7 @@ public class SignatureProviderTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             int id = random.Next();
             TestSignature(provider, id, key);
@@ -185,7 +183,7 @@ public class SignatureProviderTests
     }
 
     [Fact]
-    public void TestMD5()
+    public void TestMd5()
     {
         var provider = SignatureProviderType.Md5.ToSignatureProvider();
         Random random = new(681);
@@ -200,14 +198,14 @@ public class SignatureProviderTests
     }
 
     [Fact]
-    public void TestMD5MultiThreaded()
+    public void TestMd5MultiThreaded()
     {
         var provider = SignatureProviderType.Md5.ToSignatureProvider();
         Random random = new(681);
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             int id = random.Next();
             TestSignature(provider, id, key);
@@ -215,7 +213,7 @@ public class SignatureProviderTests
     }
 
     [Fact]
-    public void TestSHA1()
+    public void TestSha1()
     {
         var provider = SignatureProviderType.Sha1.ToSignatureProvider();
         Random random = new(681);
@@ -230,14 +228,14 @@ public class SignatureProviderTests
     }
 
     [Fact]
-    public void TestSHA1MultiThreaded()
+    public void TestSha1MultiThreaded()
     {
         var provider = SignatureProviderType.Sha1.ToSignatureProvider();
         Random random = new(681);
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             int id = random.Next();
             TestSignature(provider, id, key);
@@ -245,7 +243,7 @@ public class SignatureProviderTests
     }
 
     [Fact]
-    public void TestSHA256()
+    public void TestSha256()
     {
         var provider = SignatureProviderType.Sha256.ToSignatureProvider();
         Random random = new(681);
@@ -260,22 +258,22 @@ public class SignatureProviderTests
     }
 
     [Fact]
-    public void TestSHA256MultiThreaded()
+    public void TestSha256MultiThreaded()
     {
         var provider = SignatureProviderType.Sha256.ToSignatureProvider();
         Random random = new(681);
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             int id = random.Next();
-            TestSignature(provider, id, key); ;
+            TestSignature(provider, id, key);
         });
     }
 
     [Fact]
-    public void TestSHA384()
+    public void TestSha384()
     {
         var provider = SignatureProviderType.Sha384.ToSignatureProvider();
         Random random = new(681);
@@ -290,14 +288,14 @@ public class SignatureProviderTests
     }
 
     [Fact]
-    public void TestSHA384MultiThreaded()
+    public void TestSha384MultiThreaded()
     {
         var provider = SignatureProviderType.Sha384.ToSignatureProvider();
         Random random = new(681);
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             int id = random.Next();
             TestSignature(provider, id, key);
@@ -305,7 +303,7 @@ public class SignatureProviderTests
     }
 
     [Fact]
-    public void TestSHA512()
+    public void TestSha512()
     {
         var provider = SignatureProviderType.Sha512.ToSignatureProvider();
         Random random = new(681);
@@ -320,14 +318,14 @@ public class SignatureProviderTests
     }
 
     [Fact]
-    public void TestSHA512MultiThreaded()
+    public void TestSha512MultiThreaded()
     {
         var provider = SignatureProviderType.Sha512.ToSignatureProvider();
         Random random = new(681);
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             int id = random.Next();
             TestSignature(provider, id, key);
@@ -357,7 +355,7 @@ public class SignatureProviderTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             int id = random.Next();
             TestSignature(provider, id, key);
@@ -387,7 +385,7 @@ public class SignatureProviderTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             int id = random.Next();
             TestSignature(provider, id, key);
@@ -417,7 +415,7 @@ public class SignatureProviderTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             int id = random.Next();
             TestSignature(provider, id, key);

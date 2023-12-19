@@ -23,7 +23,7 @@ public sealed class HmacSha384SignatureProvider : ISignatureProvider
         Span<byte> buffer = stackalloc byte[Unsafe.SizeOf<T>()];
         Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer), id);
 
-        HMACSHA384.TryHashData(key, buffer, destination, out var retVal);
+        _ = HMACSHA384.TryHashData(key, buffer, destination, out int retVal);
         return retVal;
     }
 

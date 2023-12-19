@@ -1,170 +1,169 @@
 ﻿namespace CryptoIds.Benchmarks;
 
-using BenchmarkDotNet.Attributes;
-using CryptoIds;
-using CryptoIds.Signature;
 using System.Security.Cryptography;
+using BenchmarkDotNet.Attributes;
+using CryptoIds.Signature;
 
 [MemoryDiagnoser]
 public class Benchmarks
 {
-    private static readonly int _id = 123456789;
-    private static readonly byte[] _key = new byte[128];
-    private static readonly byte[] _keyB = new byte[128];
-    private static readonly Crc32SignatureProvider _signerCrc32 = Crc32SignatureProvider.Instance;
-    private static readonly XxHash32SignatureProvider _signerXxHash32 = XxHash32SignatureProvider.Instance;
-    private static readonly HmacMd5SignatureProvider _signerMd5 = HmacMd5SignatureProvider.Instance;
-    private static readonly HmacSha1SignatureProvider _signerSha1 = HmacSha1SignatureProvider.Instance;
-    private static readonly HmacSha256SignatureProvider _signerSha256 = HmacSha256SignatureProvider.Instance;
-    private static readonly HmacSha3_256SignatureProvider _signerSha3_256 = HmacSha3_256SignatureProvider.Instance;
+    private static readonly int Id = 123456789;
+    private static readonly byte[] Key = new byte[128];
+    private static readonly byte[] KeyB = new byte[128];
+    private static readonly Crc32SignatureProvider SignerCrc32 = Crc32SignatureProvider.Instance;
+    private static readonly XxHash32SignatureProvider SignerXxHash32 = XxHash32SignatureProvider.Instance;
+    private static readonly HmacMd5SignatureProvider SignerMd5 = HmacMd5SignatureProvider.Instance;
+    private static readonly HmacSha1SignatureProvider SignerSha1 = HmacSha1SignatureProvider.Instance;
+    private static readonly HmacSha256SignatureProvider SignerSha256 = HmacSha256SignatureProvider.Instance;
+    private static readonly HmacSha3_256SignatureProvider SignerSha3256 = HmacSha3_256SignatureProvider.Instance;
 
-    private static readonly CryptoIdContext _contextNotEncrypted = CryptoIdContext.CreateFromPassword("password", encrypt: false);
-    private static readonly CryptoIdContext _contextEncrypted = CryptoIdContext.CreateFromPassword("password", encrypt: true);
+    private static readonly CryptoIdContext ContextNotEncrypted = CryptoIdContext.CreateFromPassword("password", encrypt: false);
+    private static readonly CryptoIdContext ContextEncrypted = CryptoIdContext.CreateFromPassword("password", encrypt: true);
 
     static Benchmarks()
     {
-        RandomNumberGenerator.Fill(_key);
-        RandomNumberGenerator.Fill(_keyB);
+        RandomNumberGenerator.Fill(Key);
+        RandomNumberGenerator.Fill(KeyB);
     }
 
     [Benchmark, BenchmarkCategory("CRC32", "IdOperations", "Bytes")]
     public void EncodeInt32Crc32_IdOperations_ToUtf8Bytes()
     {
-        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(_signerCrc32);
+        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(SignerCrc32);
 
         Span<byte> encoded = stackalloc byte[stringLength];
 
-        IdOperations.TrySignAndEncode(_id, _key, _signerCrc32, encoded);
+        _ = IdOperations.TrySignAndEncode(Id, Key, SignerCrc32, encoded);
     }
 
     [Benchmark, BenchmarkCategory("CRC32", "IdOperations", "Chars")]
     public void EncodeInt32Crc32_IdOperations_ToChars()
     {
-        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(_signerCrc32);
+        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(SignerCrc32);
 
         Span<char> encoded = stackalloc char[stringLength];
 
-        IdOperations.TrySignAndEncode(_id, _key, _signerCrc32, encoded);
+        _ = IdOperations.TrySignAndEncode(Id, Key, SignerCrc32, encoded);
     }
-    
+
     [Benchmark, BenchmarkCategory("XXHash32", "Context", "Encrypted")]
     public void EncodeInt32XxHash32_WithContextEncrypted()
     {
-        int stringLength = _contextEncrypted.GetRequiredLengthForEncode<int>();
+        int stringLength = ContextEncrypted.GetRequiredLengthForEncode<int>();
 
         Span<byte> encoded = stackalloc byte[stringLength];
-        
-        _contextEncrypted.TryEncode(_id, encoded);
+
+        _ = ContextEncrypted.TryEncode(Id, encoded);
     }
-    
+
     [Benchmark, BenchmarkCategory("XXHash32", "Context", "NotEncrypted")]
     public void EncodeInt32XxHash32_WithContextNotEncrypted()
     {
-        int stringLength = _contextNotEncrypted.GetRequiredLengthForEncode<int>();
+        int stringLength = ContextNotEncrypted.GetRequiredLengthForEncode<int>();
 
         Span<byte> encoded = stackalloc byte[stringLength];
-        
-        _contextNotEncrypted.TryEncode(_id, encoded);
+
+        _ = ContextNotEncrypted.TryEncode(Id, encoded);
     }
 
     [Benchmark, BenchmarkCategory("XXHash32", "IdOperations", "Bytes")]
     public void EncodeInt32XxHash32_IdOperations_ToUtf8Bytes()
     {
-        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(_signerXxHash32);
+        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(SignerXxHash32);
 
         Span<byte> encoded = stackalloc byte[stringLength];
 
-        IdOperations.TrySignAndEncode(_id, _key, _signerXxHash32, encoded);
+        _ = IdOperations.TrySignAndEncode(Id, Key, SignerXxHash32, encoded);
     }
 
     [Benchmark, BenchmarkCategory("XXHash32", "IdOperations", "Chars")]
     public void EncodeInt32XxHash32_IdOperations_ToChars()
     {
-        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(_signerXxHash32);
+        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(SignerXxHash32);
 
         Span<char> encoded = stackalloc char[stringLength];
 
-        IdOperations.TrySignAndEncode(_id, _key, _signerXxHash32, encoded);
+        _ = IdOperations.TrySignAndEncode(Id, Key, SignerXxHash32, encoded);
     }
 
     [Benchmark, BenchmarkCategory("MD5", "IdOperations", "Bytes")]
     public void EncodeInt32Md5_IdOperations_ToUtf8Bytes()
     {
-        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(_signerMd5);
+        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(SignerMd5);
 
         Span<byte> encoded = stackalloc byte[stringLength];
 
-        IdOperations.TrySignAndEncode(_id, _key, _signerMd5, encoded);
+        _ = IdOperations.TrySignAndEncode(Id, Key, SignerMd5, encoded);
     }
 
     [Benchmark, BenchmarkCategory("MD5", "IdOperations", "Chars")]
     public void EncodeInt32Md5_IdOperations_ToChars()
     {
-        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(_signerMd5);
+        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(SignerMd5);
 
         Span<char> encoded = stackalloc char[stringLength];
 
-        IdOperations.TrySignAndEncode(_id, _key, _signerMd5, encoded);
+        _ = IdOperations.TrySignAndEncode(Id, Key, SignerMd5, encoded);
     }
 
     [Benchmark, BenchmarkCategory("Sha1", "IdOperations", "Bytes")]
     public void EncodeInt32Sha1_IdOperations_ToUtf8Bytes()
     {
-        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(_signerSha1);
+        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(SignerSha1);
 
         Span<byte> encoded = stackalloc byte[stringLength];
 
-        IdOperations.TrySignAndEncode(_id, _key, _signerSha1, encoded);
+        _ = IdOperations.TrySignAndEncode(Id, Key, SignerSha1, encoded);
     }
 
     [Benchmark, BenchmarkCategory("Sha1", "IdOperations", "Chars")]
     public void EncodeInt32Sha1_IdOperations_ToChars()
     {
-        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(_signerSha1);
+        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(SignerSha1);
 
         Span<char> encoded = stackalloc char[stringLength];
 
-        IdOperations.TrySignAndEncode(_id, _key, _signerSha1, encoded);
+        _ = IdOperations.TrySignAndEncode(Id, Key, SignerSha1, encoded);
     }
 
     [Benchmark, BenchmarkCategory("Sha256", "IdOperations", "Bytes")]
     public void EncodeInt32Sha256_IdOperations_ToUtf8Bytes()
     {
-        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(_signerSha256);
+        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(SignerSha256);
 
         Span<byte> encoded = stackalloc byte[stringLength];
 
-        IdOperations.TrySignAndEncode(_id, _key, _signerSha256, encoded);
+        _ = IdOperations.TrySignAndEncode(Id, Key, SignerSha256, encoded);
     }
 
     [Benchmark, BenchmarkCategory("Sha256", "IdOperations", "Chars")]
     public void EncodeInt32Sha256_IdOperations_ToChars()
     {
-        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(_signerSha256);
+        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(SignerSha256);
 
         Span<char> encoded = stackalloc char[stringLength];
 
-        IdOperations.TrySignAndEncode(_id, _key, _signerSha256, encoded);
+        _ = IdOperations.TrySignAndEncode(Id, Key, SignerSha256, encoded);
     }
 
     [Benchmark, BenchmarkCategory("Sha3_256", "IdOperations", "Bytes")]
     public void EncodeInt32Sha3_256_IdOperations_ToUtf8Bytes()
     {
-        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(_signerSha3_256);
+        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(SignerSha3256);
 
         Span<byte> encoded = stackalloc byte[stringLength];
 
-        IdOperations.TrySignAndEncode(_id, _key, _signerSha3_256, encoded);
+        _ = IdOperations.TrySignAndEncode(Id, Key, SignerSha3256, encoded);
     }
 
     [Benchmark, BenchmarkCategory("Sha3_256", "IdOperations", "Chars")]
     public void EncodeInt32Sha3_256_IdOperations_ToChars()
     {
-        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(_signerSha3_256);
+        int stringLength = IdOperations.GetRequiredLengthForEncode<int>(SignerSha3256);
 
         Span<char> encoded = stackalloc char[stringLength];
 
-        IdOperations.TrySignAndEncode(_id, _key, _signerSha3_256, encoded);
+        _ = IdOperations.TrySignAndEncode(Id, Key, SignerSha3256, encoded);
     }
 
     // [Benchmark]

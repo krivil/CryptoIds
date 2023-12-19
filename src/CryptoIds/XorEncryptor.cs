@@ -8,7 +8,7 @@ public static class XorEncryptor
     public static Span<byte> Xor(ReadOnlySpan<byte> input, ReadOnlySpan<byte> seed, ReadOnlySpan<byte> key)
     {
         Span<byte> output = new byte[input.Length];
-        TryXor(input, seed, key, output);
+        _ = TryXor(input, seed, key, output);
         return output;
     }
 
@@ -16,28 +16,19 @@ public static class XorEncryptor
     public static Span<byte> Xor(ReadOnlySpan<byte> input, ReadOnlySpan<byte> key)
     {
         Span<byte> output = new byte[input.Length];
-        TryXor(input, key, output);
+        _ = TryXor(input, key, output);
         return output;
     }
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void XorInline(Span<byte> bytes, ReadOnlySpan<byte> seed, ReadOnlySpan<byte> key, ReadOnlySpan<byte> publicKey)
-    {
-        InternalXor(bytes, seed, key, publicKey);
-    }
+    public static void XorInline(Span<byte> bytes, ReadOnlySpan<byte> seed, ReadOnlySpan<byte> key, ReadOnlySpan<byte> publicKey) => InternalXor(bytes, seed, key, publicKey);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void XorInline(Span<byte> bytes, ReadOnlySpan<byte> seed, ReadOnlySpan<byte> key)
-    {
-        InternalXor(bytes, seed, key);
-    }
+    public static void XorInline(Span<byte> bytes, ReadOnlySpan<byte> seed, ReadOnlySpan<byte> key) => InternalXor(bytes, seed, key);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void XorInline(Span<byte> bytes, ReadOnlySpan<byte> key)
-    {
-        InternalXor(bytes, key);
-    }
+    public static void XorInline(Span<byte> bytes, ReadOnlySpan<byte> key) => InternalXor(bytes, key);
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -70,7 +61,7 @@ public static class XorEncryptor
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void InternalXor(Span<byte> bytes, ReadOnlySpan<byte> seed, ReadOnlySpan<byte> key, ReadOnlySpan<byte> publicKey)
     {
-        for (var i = 0; i < bytes.Length; i++)
+        for (int i = 0; i < bytes.Length; i++)
         {
             byte b = bytes[i];
             b ^= seed[i % seed.Length];
@@ -90,7 +81,7 @@ public static class XorEncryptor
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void InternalXor(Span<byte> bytes, ReadOnlySpan<byte> seed, ReadOnlySpan<byte> key)
     {
-        for (var i = 0; i < bytes.Length; i++)
+        for (int i = 0; i < bytes.Length; i++)
         {
             byte b = bytes[i];
             b ^= seed[i % seed.Length];
@@ -109,7 +100,7 @@ public static class XorEncryptor
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void InternalXor(Span<byte> bytes, ReadOnlySpan<byte> key)
     {
-        for (var i = 0; i < bytes.Length; i++)
+        for (int i = 0; i < bytes.Length; i++)
         {
             byte b = bytes[i];
             b ^= key[i % key.Length];

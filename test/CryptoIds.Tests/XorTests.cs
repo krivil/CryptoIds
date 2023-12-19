@@ -1,7 +1,5 @@
 namespace CryptoIds.Tests;
 
-using CryptoIds;
-
 public class XorTests
 {
     [Fact]
@@ -33,7 +31,7 @@ public class XorTests
         random.NextBytes(key);
         byte[] seed = new byte[128];
         random.NextBytes(seed);
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             byte[] input = new byte[128];
             random.NextBytes(input);
@@ -71,7 +69,7 @@ public class XorTests
         Random random = new(681);
         byte[] key = new byte[128];
         random.NextBytes(key);
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             byte[] input = new byte[128];
             random.NextBytes(input);

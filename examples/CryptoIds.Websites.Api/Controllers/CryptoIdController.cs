@@ -9,10 +9,7 @@ public class CryptoIdController : ControllerBase
 {
     private readonly ILogger<CryptoIdController> _logger;
 
-    public CryptoIdController(ILogger<CryptoIdController> logger)
-    {
-        _logger = logger;
-    }
+    public CryptoIdController(ILogger<CryptoIdController> logger) => _logger = logger;
 
     [HttpGet("/", Name = "GetIds")]
     public IEnumerable<IdDto> Get([FromQuery] int from = 1, [FromQuery] int to = 100) =>

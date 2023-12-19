@@ -1,7 +1,5 @@
 namespace CryptoIds.Tests;
 
-using CryptoIds;
-
 public class IdOperationsTests
 {
     private static void TestSignAndVerify<T>(T id, byte[] key, ISignatureProvider provider)
@@ -40,7 +38,7 @@ public class IdOperationsTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.Next();
             TestSignAndVerify(id, key, provider);
@@ -58,7 +56,7 @@ public class IdOperationsTests
         for (int i = 0; i < 1000; i++)
         {
             long id = random.Next();
-            TestSignAndVerify(id, key, provider); ;
+            TestSignAndVerify(id, key, provider);
         }
     }
 
@@ -70,7 +68,7 @@ public class IdOperationsTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.Next();
             TestSignAndVerify(id, key, provider);
@@ -101,7 +99,7 @@ public class IdOperationsTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.Next();
             TestSignAndVerify(id, key, provider);
@@ -131,7 +129,7 @@ public class IdOperationsTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.Next();
             TestSignAndVerify(id, key, provider);
@@ -161,7 +159,7 @@ public class IdOperationsTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.Next();
             TestSignAndVerify(id, key, provider);
@@ -191,7 +189,7 @@ public class IdOperationsTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.Next();
             TestSignAndVerify(id, key, provider);
@@ -221,7 +219,7 @@ public class IdOperationsTests
         byte[] key = new byte[128];
         random.NextBytes(key);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.Next();
             TestSignAndVerify(id, key, provider);
@@ -268,7 +266,7 @@ public class IdOperationsTests
         byte[] key2 = new byte[128];
         random.NextBytes(key2);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.Next();
             TestSignAndVerifyAndEncrypt(id, key, key2, provider);
@@ -288,7 +286,7 @@ public class IdOperationsTests
         for (int i = 0; i < 1000; i++)
         {
             long id = random.Next();
-            TestSignAndVerifyAndEncrypt(id, key, key2, provider); ;
+            TestSignAndVerifyAndEncrypt(id, key, key2, provider);
         }
     }
 
@@ -302,7 +300,7 @@ public class IdOperationsTests
         byte[] key2 = new byte[128];
         random.NextBytes(key2);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.Next();
             TestSignAndVerifyAndEncrypt(id, key, key2, provider);
@@ -337,7 +335,7 @@ public class IdOperationsTests
         byte[] key2 = new byte[128];
         random.NextBytes(key2);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.Next();
             TestSignAndVerifyAndEncrypt(id, key, key2, provider);
@@ -371,7 +369,7 @@ public class IdOperationsTests
         byte[] key2 = new byte[128];
         random.NextBytes(key2);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.Next();
             TestSignAndVerifyAndEncrypt(id, key, key2, provider);
@@ -405,7 +403,7 @@ public class IdOperationsTests
         byte[] key2 = new byte[128];
         random.NextBytes(key2);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.Next();
             TestSignAndVerifyAndEncrypt(id, key, key2, provider);
@@ -439,7 +437,7 @@ public class IdOperationsTests
         byte[] key2 = new byte[128];
         random.NextBytes(key2);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.Next();
             TestSignAndVerifyAndEncrypt(id, key, key2, provider);
@@ -473,7 +471,7 @@ public class IdOperationsTests
         byte[] key2 = new byte[128];
         random.NextBytes(key2);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.Next();
             TestSignAndVerifyAndEncrypt(id, key, key2, provider);

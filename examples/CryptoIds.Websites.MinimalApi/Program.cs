@@ -1,4 +1,5 @@
 using CryptoIds;
+using CryptoIds.Asp;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,8 +16,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    _ = app.UseSwagger();
+    _ = app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
@@ -35,7 +36,7 @@ app.MapGet("/crypto-int/{id}", ([FromRoute] CryptoId<int> id) => IdDto.From(id))
 
 app.Run();
 
-record IdDto(CryptoId<int> CryptoInt, CryptoId<long> CryptoLong, CryptoId<(int, long)> CryptoBoth, int Int, long Long)
+internal record IdDto(CryptoId<int> CryptoInt, CryptoId<long> CryptoLong, CryptoId<(int, long)> CryptoBoth, int Int, long Long)
 {
     public static IdDto From(int id) => new(id, id, (id, id), id, id);
 }

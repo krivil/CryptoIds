@@ -6,14 +6,14 @@ using System.Text.Json.Serialization;
 
 public class CryptoIdJsonConverterFactory : JsonConverterFactory
 {
-    public override bool CanConvert(Type typeToConvert) => 
+    public override bool CanConvert(Type typeToConvert) =>
         typeToConvert.IsGenericType && typeToConvert.GetGenericTypeDefinition() == typeof(CryptoId<>);
 
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
         Type valueType = typeToConvert.GetGenericArguments()[0];
 
-        JsonConverter converter = (JsonConverter)Activator.CreateInstance(
+        JsonConverter converter = (JsonConverter) Activator.CreateInstance(
             typeof(CryptoIdJsonConverter<>).MakeGenericType(valueType),
             BindingFlags.Instance | BindingFlags.Public,
             binder: null,
@@ -36,7 +36,7 @@ public class CryptoIdJsonConverterFactory : JsonConverterFactory
         public override void Write(Utf8JsonWriter writer, CryptoId<T> value, JsonSerializerOptions options)
         {
             Span<byte> bytes = stackalloc byte[CryptoId<T>.GetLengthWhenEncoded()];
-            value.TryEncode(bytes);
+            _ = value.TryEncode(bytes);
             writer.WriteStringValue(bytes);
         }
     }

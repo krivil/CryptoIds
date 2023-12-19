@@ -1,7 +1,5 @@
 namespace CryptoIds.Tests;
 
-using CryptoIds;
-
 public class CryptoIdContextTests
 {
     [Fact]
@@ -27,7 +25,7 @@ public class CryptoIdContextTests
         random.NextBytes(keys);
         var context = CryptoIdContext.Create(keys, SignatureProviderType.Crc32, true);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
             TestContext(context, id);
@@ -57,7 +55,7 @@ public class CryptoIdContextTests
         random.NextBytes(keys);
         var context = CryptoIdContext.Create(keys, SignatureProviderType.Crc64, true);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
             TestContext(context, id);
@@ -87,7 +85,7 @@ public class CryptoIdContextTests
         random.NextBytes(keys);
         var context = CryptoIdContext.Create(keys, SignatureProviderType.XxHash32, true);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
             TestContext(context, id);
@@ -117,7 +115,7 @@ public class CryptoIdContextTests
         random.NextBytes(keys);
         var context = CryptoIdContext.Create(keys, SignatureProviderType.XxHash64, true);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
             TestContext(context, id);
@@ -147,7 +145,7 @@ public class CryptoIdContextTests
         random.NextBytes(keys);
         var context = CryptoIdContext.Create(keys, SignatureProviderType.Md5, true);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
             TestContext(context, id);
@@ -177,7 +175,7 @@ public class CryptoIdContextTests
         random.NextBytes(keys);
         var context = CryptoIdContext.Create(keys, SignatureProviderType.Sha1, true);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
             TestContext(context, id);
@@ -208,7 +206,7 @@ public class CryptoIdContextTests
         var context =
             CryptoIdContext.Create(keys, SignatureProviderType.Sha256, true);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
             TestContext(context, id);
@@ -238,7 +236,7 @@ public class CryptoIdContextTests
         random.NextBytes(keys);
         var context = CryptoIdContext.Create(keys, SignatureProviderType.Sha384, true);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
             TestContext(context, id);
@@ -269,7 +267,7 @@ public class CryptoIdContextTests
         var context =
             CryptoIdContext.Create(keys, SignatureProviderType.Sha512, true);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
             TestContext(context, id);
@@ -300,7 +298,7 @@ public class CryptoIdContextTests
         var context =
             CryptoIdContext.Create(keys, SignatureProviderType.Sha3_256, true);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
             TestContext(context, id);
@@ -331,7 +329,7 @@ public class CryptoIdContextTests
         var context =
             CryptoIdContext.Create(keys, SignatureProviderType.Sha3_384, true);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
             TestContext(context, id);
@@ -361,7 +359,7 @@ public class CryptoIdContextTests
         random.NextBytes(keys);
         var context = CryptoIdContext.Create(keys, SignatureProviderType.Sha3_512, true);
 
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
             TestContext(context, id);
@@ -372,14 +370,12 @@ public class CryptoIdContextTests
     {
         Span<char> chars = stackalloc char[context.GetRequiredLengthForEncode<T>()];
 
-        //int bytesWritten = IdOperations.TrySignAndXorAndEncode(id, keys.KeyA, keys.KeyB, SignatureProviderType.Crc32.ToSignatureProvider(), chars);
         int bytesWritten = context.TryEncode(id, chars);
 
         var encoded = chars[..bytesWritten];
 
         Assert.True(bytesWritten == chars.Length, "bytesWritten == chars.Length");
 
-        //bool verify = IdOperations.TryDecodeAndXorAndValidate(encoded, keys.KeyA, keys.KeyB, SignatureProviderType.Crc32.ToSignatureProvider(), out int result);
         bool verify = context.TryDecode(encoded, out T result);
 
         Assert.Equal(id, result);

@@ -9,10 +9,7 @@ public readonly partial struct CryptoId<T> where T : unmanaged
 {
     private readonly T _value;
 
-    private CryptoId(T value)
-    {
-        _value = value;
-    }
+    private CryptoId(T value) => _value = value;
 }
 
 public partial struct CryptoId<T>
@@ -36,7 +33,7 @@ public partial struct CryptoId<T>
 
     public static int GetLengthWhenEncoded() => CryptoIdContext.Default.GetRequiredLengthForEncode<T>();
 
-    public static bool TryParse(string s, out CryptoId<T> result) => TryParse((ReadOnlySpan<char>)s, out result);
+    public static bool TryParse(string s, out CryptoId<T> result) => TryParse((ReadOnlySpan<char>) s, out result);
 
     public static bool TryParse(ReadOnlySpan<char> s, out CryptoId<T> result)
     {
@@ -50,7 +47,7 @@ public partial struct CryptoId<T>
 
         try
         {
-            Encoding.UTF8.GetBytes(s, buffer);
+            _ = Encoding.UTF8.GetBytes(s, buffer);
             return TryParse(buffer, out result);
         }
         finally
@@ -64,36 +61,36 @@ public partial struct CryptoId<T>
 
     public char[] Encode()
     {
-        var result = new char[CryptoIdContext.Default.GetRequiredLengthForEncode<T>()];
+        char[] result = new char[CryptoIdContext.Default.GetRequiredLengthForEncode<T>()];
 
-        CryptoIdContext.Default.TryEncode(_value, result);
+        _ = CryptoIdContext.Default.TryEncode(_value, result);
 
         return result;
     }
 
     public char[] Encode(Guid userKey)
     {
-        var result = new char[CryptoIdContext.Default.GetRequiredLengthForEncode<T>()];
+        char[] result = new char[CryptoIdContext.Default.GetRequiredLengthForEncode<T>()];
 
-        CryptoIdContext.Default.TryEncode(_value, userKey, result);
+        _ = CryptoIdContext.Default.TryEncode(_value, userKey, result);
 
         return result;
     }
 
     public byte[] EncodeBytes()
     {
-        var result = new byte[CryptoIdContext.Default.GetRequiredLengthForEncode<T>()];
+        byte[] result = new byte[CryptoIdContext.Default.GetRequiredLengthForEncode<T>()];
 
-        CryptoIdContext.Default.TryEncode(_value, result);
+        _ = CryptoIdContext.Default.TryEncode(_value, result);
 
         return result;
     }
 
     public byte[] EncodeBytes(Guid userKey)
     {
-        var result = new byte[CryptoIdContext.Default.GetRequiredLengthForEncode<T>()];
+        byte[] result = new byte[CryptoIdContext.Default.GetRequiredLengthForEncode<T>()];
 
-        CryptoIdContext.Default.TryEncode(_value, userKey, result);
+        _ = CryptoIdContext.Default.TryEncode(_value, userKey, result);
 
         return result;
     }
@@ -101,45 +98,33 @@ public partial struct CryptoId<T>
     public bool TryEncode(Span<char> result)
     {
         int lengthForEncode = CryptoIdContext.Default.GetRequiredLengthForEncode<T>();
-        if (result.Length < lengthForEncode)
-        {
-            throw new ArgumentException("Destination buffer is too small", nameof(result));
-        }
-
-        return lengthForEncode == CryptoIdContext.Default.TryEncode(_value, result);
+        return result.Length < lengthForEncode
+            ? throw new ArgumentException("Destination buffer is too small", nameof(result))
+            : lengthForEncode == CryptoIdContext.Default.TryEncode(_value, result);
     }
 
     public bool TryEncode(Span<char> result, Guid userKey)
     {
         int lengthForEncode = CryptoIdContext.Default.GetRequiredLengthForEncode<T>();
-        if (result.Length < lengthForEncode)
-        {
-            throw new ArgumentException("Destination buffer is too small", nameof(result));
-        }
-
-        return lengthForEncode == CryptoIdContext.Default.TryEncode(_value, userKey, result);
+        return result.Length < lengthForEncode
+            ? throw new ArgumentException("Destination buffer is too small", nameof(result))
+            : lengthForEncode == CryptoIdContext.Default.TryEncode(_value, userKey, result);
     }
 
     public bool TryEncode(Span<byte> result)
     {
         int lengthForEncode = CryptoIdContext.Default.GetRequiredLengthForEncode<T>();
-        if (result.Length < lengthForEncode)
-        {
-            throw new ArgumentException("Destination buffer is too small", nameof(result));
-        }
-
-        return lengthForEncode == CryptoIdContext.Default.TryEncode(_value, result);
+        return result.Length < lengthForEncode
+            ? throw new ArgumentException("Destination buffer is too small", nameof(result))
+            : lengthForEncode == CryptoIdContext.Default.TryEncode(_value, result);
     }
 
     public bool TryEncode(Span<byte> result, Guid userKey)
     {
         int lengthForEncode = CryptoIdContext.Default.GetRequiredLengthForEncode<T>();
-        if (result.Length < lengthForEncode)
-        {
-            throw new ArgumentException("Destination buffer is too small", nameof(result));
-        }
-
-        return lengthForEncode == CryptoIdContext.Default.TryEncode(_value, userKey, result);
+        return result.Length < lengthForEncode
+            ? throw new ArgumentException("Destination buffer is too small", nameof(result))
+            : lengthForEncode == CryptoIdContext.Default.TryEncode(_value, userKey, result);
     }
 
     public static implicit operator CryptoId<T>(T value) => new(value);
@@ -150,13 +135,13 @@ public partial struct CryptoId<T>
     public static explicit operator CryptoId<T>(byte[] encoded) => Decode(encoded);
     public static explicit operator CryptoId<T>(Span<byte> encoded) => Decode(encoded);
     public static explicit operator CryptoId<T>(ReadOnlySpan<byte> encoded) => Decode(encoded);
-    public static explicit operator CryptoId<T>?(byte[]? encoded) => encoded is null ? null : (CryptoId<T>?)Decode(encoded);
+    public static explicit operator CryptoId<T>?(byte[]? encoded) => encoded is null ? null : Decode(encoded);
     public static explicit operator CryptoId<T>(char[] encoded) => Decode(encoded);
-    public static explicit operator CryptoId<T>?(char[]? encoded) => encoded is null ? null : (CryptoId<T>?)Decode(encoded);
+    public static explicit operator CryptoId<T>?(char[]? encoded) => encoded is null ? null : Decode(encoded);
     public static explicit operator CryptoId<T>(Span<char> encoded) => Decode(encoded);
     public static explicit operator CryptoId<T>(ReadOnlySpan<char> encoded) => Decode(encoded);
     public static explicit operator CryptoId<T>(string encoded) => Decode(encoded);
-    public static explicit operator CryptoId<T>?(string? encoded) => encoded is null ? null : (CryptoId<T>?)Decode(encoded);
+    public static explicit operator CryptoId<T>?(string? encoded) => encoded is null ? null : Decode(encoded);
     public static explicit operator char[](CryptoId<T> cryptoId) => cryptoId.Encode();
     public static explicit operator char[]?(CryptoId<T>? cryptoId) => cryptoId?.Encode();
     public static explicit operator byte[](CryptoId<T> cryptoId) => cryptoId.EncodeBytes();

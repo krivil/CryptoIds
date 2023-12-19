@@ -199,7 +199,7 @@ public static class IdOperations
             }
 
             Span<byte> sessionKeySpan = stackalloc byte[16];
-            session.TryWriteBytes(sessionKeySpan);
+            _ = session.TryWriteBytes(sessionKeySpan);
 
             // id -> (id,signature) -> id = id ^ signature ^ keyXor
             XorEncryptor.XorInline(buffer[..sizeOfId], buffer[sizeOfId..bytesWritten], keyXor, sessionKeySpan);
@@ -277,7 +277,7 @@ public static class IdOperations
         spanIdAsBytes.Reverse(); // little endian to big endian - helps with sorting
 
         Span<byte> signature = stackalloc byte[signer.SignatureLength]; // maximum is 64 bytes
-        signer.Sign(id, key, signature);
+        _ = signer.Sign(id, key, signature);
 
         Span<byte> buffer = stackalloc byte[spanIdAsBytes.Length + signature.Length];
         spanIdAsBytes.CopyTo(buffer);
@@ -301,7 +301,7 @@ public static class IdOperations
         MemoryMarshal.Write(spanIdAsBytes, in id);
 
         Span<byte> signature = stackalloc byte[signer.SignatureLength]; // maximum is 64 bytes
-        signer.Sign(id, key, signature);
+        _ = signer.Sign(id, key, signature);
 
         Span<byte> buffer = stackalloc byte[sizeOfAllInBytes];
         spanIdAsBytes.CopyTo(buffer);
@@ -319,12 +319,9 @@ public static class IdOperations
             XorEncryptor.XorInline(buffer[..sizeOfIdInBytes], buffer[sizeOfIdInBytes..], keyXor);
 
             int bytesWritten = Base64UrlStringEncoder.Encode(buffer, encoded);
-            if (bytesWritten != requiredLengthForEncode || bytesWritten == 0)
-            {
-                return 0;
-            }
-
-            return Encoding.UTF8.GetChars(encoded[..bytesWritten], encodedResult);
+            return bytesWritten != requiredLengthForEncode || bytesWritten == 0
+                ? 0
+                : Encoding.UTF8.GetChars(encoded[..bytesWritten], encodedResult);
         }
         finally
         {
@@ -350,7 +347,7 @@ public static class IdOperations
         MemoryMarshal.Write(spanIdAsBytes, in id);
 
         Span<byte> signature = stackalloc byte[signer.SignatureLength]; // maximum is 64 bytes
-        signer.Sign(id, key, signature);
+        _ = signer.Sign(id, key, signature);
 
         Span<byte> buffer = stackalloc byte[sizeOfAllInBytes];
         spanIdAsBytes.CopyTo(buffer);
@@ -377,7 +374,7 @@ public static class IdOperations
         MemoryMarshal.Write(spanIdAsBytes, in id);
 
         Span<byte> signature = stackalloc byte[signer.SignatureLength]; // maximum is 64 bytes
-        signer.Sign(id, key, signature);
+        _ = signer.Sign(id, key, signature);
 
         Span<byte> buffer = stackalloc byte[sizeOfAllInBytes];
         spanIdAsBytes.CopyTo(buffer);
@@ -392,17 +389,14 @@ public static class IdOperations
         try
         {
             Span<byte> sessionKeySpan = stackalloc byte[16];
-            sessionKey.TryWriteBytes(sessionKeySpan);
+            _ = sessionKey.TryWriteBytes(sessionKeySpan);
             // id -> (id,signature) -> id = id ^ signature ^ keyXor
             XorEncryptor.XorInline(buffer[..sizeOfIdInBytes], buffer[sizeOfIdInBytes..], keyXor, sessionKeySpan);
 
             int bytesWritten = Base64UrlStringEncoder.Encode(buffer, encoded);
-            if (bytesWritten != requiredLengthForEncode || bytesWritten == 0)
-            {
-                return 0;
-            }
-
-            return Encoding.UTF8.GetChars(encoded[..bytesWritten], encodedResult);
+            return bytesWritten != requiredLengthForEncode || bytesWritten == 0
+                ? 0
+                : Encoding.UTF8.GetChars(encoded[..bytesWritten], encodedResult);
         }
         finally
         {
@@ -428,14 +422,14 @@ public static class IdOperations
         MemoryMarshal.Write(spanIdAsBytes, in id);
 
         Span<byte> signature = stackalloc byte[signer.SignatureLength]; // maximum is 64 bytes
-        signer.Sign(id, key, signature);
+        _ = signer.Sign(id, key, signature);
 
         Span<byte> buffer = stackalloc byte[sizeOfAllInBytes];
         spanIdAsBytes.CopyTo(buffer);
         signature.CopyTo(buffer[spanIdAsBytes.Length..]);
 
         Span<byte> sessionKeySpan = stackalloc byte[16];
-        sessionKey.TryWriteBytes(sessionKeySpan);
+        _ = sessionKey.TryWriteBytes(sessionKeySpan);
         // id -> (id,signature) -> id = id ^ signature ^ keyXor
         XorEncryptor.XorInline(buffer[..sizeOfIdInBytes], buffer[sizeOfIdInBytes..], keyXor, sessionKeySpan);
 

@@ -1,7 +1,5 @@
 namespace CryptoIds.Tests;
 
-using CryptoIds;
-
 public class Base64EncoderTests
 {
     [Fact]
@@ -13,9 +11,9 @@ public class Base64EncoderTests
             byte[] input = new byte[128];
             random.NextBytes(input);
             byte[] output = new byte[Base64UrlStringEncoder.GetRequiredLengthForEncode(input.Length)];
-            Base64UrlStringEncoder.Encode(input, output);
+            _ = Base64UrlStringEncoder.Encode(input, output);
             byte[] decoded = new byte[Base64UrlStringEncoder.GetMaximumRequiredLengthForDecode(output)];
-            Base64UrlStringEncoder.Decode(output, decoded);
+            _ = Base64UrlStringEncoder.Decode(output, decoded);
             Assert.Equal(input, decoded);
         }
     }
@@ -24,14 +22,14 @@ public class Base64EncoderTests
     public void TestBase64EncodeAndDecodeMultiThreaded()
     {
         Random random = new(681);
-        Parallel.For(0, 1000, i =>
+        _ = Parallel.For(0, 1000, _ =>
         {
             byte[] input = new byte[128];
             random.NextBytes(input);
             byte[] output = new byte[Base64UrlStringEncoder.GetRequiredLengthForEncode(input.Length)];
-            Base64UrlStringEncoder.Encode(input, output);
+            _ = Base64UrlStringEncoder.Encode(input, output);
             byte[] decoded = new byte[Base64UrlStringEncoder.GetMaximumRequiredLengthForDecode(output)];
-            Base64UrlStringEncoder.Decode(output, decoded);
+            _ = Base64UrlStringEncoder.Decode(output, decoded);
             Assert.Equal(input, decoded);
         });
     }

@@ -16,8 +16,8 @@ public static class Base64UrlStringEncoder
 
         // Assumption: input is base64url encoded without padding and contains no whitespace.
 
-        var paddingCharsToAdd = GetPaddingCharsToAddForDecode(inputLength);
-        var arraySizeRequired = checked(inputLength + paddingCharsToAdd);
+        int paddingCharsToAdd = GetPaddingCharsToAddForDecode(inputLength);
+        int arraySizeRequired = checked(inputLength + paddingCharsToAdd);
 
         Debug.Assert(arraySizeRequired % 4 == 0, "Invariant: Array length must be a multiple of 4.");
 
@@ -29,26 +29,26 @@ public static class Base64UrlStringEncoder
         try
         {
             // Copy input into buffer, fixing up '-' -> '+' and '_' -> '/'.
-            for (var i = 0; i < inputLength; i++)
+            for (int i = 0; i < inputLength; i++)
             {
-                var ch = input[i];
+                byte ch = input[i];
                 buffer[i] = ch switch
                 {
-                    (byte)'-' => '+',
-                    (byte)'_' => '/',
-                    _ => (char)ch
+                    (byte) '-' => '+',
+                    (byte) '_' => '/',
+                    _ => (char) ch
                 };
             }
 
             // Add the padding characters back.
-            for (var i = inputLength; paddingCharsToAdd > 0; i++, paddingCharsToAdd--)
+            for (int i = inputLength; paddingCharsToAdd > 0; i++, paddingCharsToAdd--)
             {
                 buffer[i] = '=';
             }
 
             // Decode.
             // If the caller provided invalid base64 chars, they'll be caught here.
-            Convert.TryFromBase64Chars(buffer[..arraySizeRequired], output, out int bytesWritten);
+            _ = Convert.TryFromBase64Chars(buffer[..arraySizeRequired], output, out int bytesWritten);
 
             return bytesWritten;
         }
@@ -69,8 +69,8 @@ public static class Base64UrlStringEncoder
 
         // Assumption: input is base64url encoded without padding and contains no whitespace.
 
-        var paddingCharsToAdd = GetPaddingCharsToAddForDecode(inputLength);
-        var arraySizeRequired = checked(inputLength + paddingCharsToAdd);
+        int paddingCharsToAdd = GetPaddingCharsToAddForDecode(inputLength);
+        int arraySizeRequired = checked(inputLength + paddingCharsToAdd);
 
         Debug.Assert(arraySizeRequired % 4 == 0, "Invariant: Array length must be a multiple of 4.");
 
@@ -82,9 +82,9 @@ public static class Base64UrlStringEncoder
         try
         {
             // Copy input into buffer, fixing up '-' -> '+' and '_' -> '/'.
-            for (var i = 0; i < inputLength; i++)
+            for (int i = 0; i < inputLength; i++)
             {
-                var ch = input[i];
+                char ch = input[i];
                 buffer[i] = ch switch
                 {
                     '-' => '+',
@@ -94,14 +94,14 @@ public static class Base64UrlStringEncoder
             }
 
             // Add the padding characters back.
-            for (var i = inputLength; paddingCharsToAdd > 0; i++, paddingCharsToAdd--)
+            for (int i = inputLength; paddingCharsToAdd > 0; i++, paddingCharsToAdd--)
             {
                 buffer[i] = '=';
             }
 
             // Decode.
             // If the caller provided invalid base64 chars, they'll be caught here.
-            Convert.TryFromBase64Chars(buffer[..arraySizeRequired], output, out int bytesWritten);
+            _ = Convert.TryFromBase64Chars(buffer[..arraySizeRequired], output, out int bytesWritten);
 
             return bytesWritten;
         }
@@ -142,24 +142,24 @@ public static class Base64UrlStringEncoder
         {
             // Use base64url encoding with no padding characters. See RFC 4648, Sec. 5.
 
-            Convert.TryToBase64Chars(input, buffer, out int charsWritten);
+            _ = Convert.TryToBase64Chars(input, buffer, out int charsWritten);
 
             // Fix up '+' -> '-' and '/' -> '_'. Drop padding characters.
-            for (var i = 0; i < charsWritten; i++)
+            for (int i = 0; i < charsWritten; i++)
             {
-                var ch = buffer[i];
+                char ch = buffer[i];
                 switch (ch)
                 {
                     case '+':
-                        output[i] = (byte)'-';
+                        output[i] = (byte) '-';
                         break;
                     case '/':
-                        output[i] = (byte)'_';
+                        output[i] = (byte) '_';
                         break;
                     case '=':
                         return i;
                     default:
-                        output[i] = (byte)ch; // It's ASCII characters
+                        output[i] = (byte) ch; // It's ASCII characters
                         break;
                 }
             }
@@ -203,12 +203,12 @@ public static class Base64UrlStringEncoder
         {
             // Use base64url encoding with no padding characters. See RFC 4648, Sec. 5.
 
-            Convert.TryToBase64Chars(input, buffer, out int charsWritten);
+            _ = Convert.TryToBase64Chars(input, buffer, out int charsWritten);
 
             // Fix up '+' -> '-' and '/' -> '_'. Drop padding characters.
-            for (var i = 0; i < charsWritten; i++)
+            for (int i = 0; i < charsWritten; i++)
             {
-                var ch = buffer[i];
+                char ch = buffer[i];
                 switch (ch)
                 {
                     case '+':
@@ -264,7 +264,7 @@ public static class Base64UrlStringEncoder
 
     private static int GetArraySizeRequiredToEncodeWithPadding(int count)
     {
-        var numWholeOrPartialInputBlocks = checked(count + 2) / 3;
+        int numWholeOrPartialInputBlocks = checked(count + 2) / 3;
         return checked(numWholeOrPartialInputBlocks * 4);
     }
 

@@ -1,7 +1,5 @@
 ﻿// ReSharper disable once CheckNamespace
-namespace Microsoft.Extensions.DependencyInjection;
-
-using CryptoIds;
+namespace CryptoIds;
 using System.Security.Cryptography;
 
 public static class CryptoIdExtensions
