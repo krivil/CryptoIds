@@ -4,6 +4,11 @@ using System.Buffers;
 using System.Text;
 using System.Text.Json.Serialization;
 
+public static class CryptoId
+{
+    public static CryptoId<T> From<T>(T id) where T : unmanaged => CryptoId<T>.From(id);
+}
+
 [JsonConverter(typeof(CryptoIdJsonConverterFactory))]
 public readonly partial struct CryptoId<T> where T : unmanaged
 {
@@ -15,6 +20,8 @@ public readonly partial struct CryptoId<T> where T : unmanaged
 public partial struct CryptoId<T>
 {
     private const int StackAllocThreshold = 128;
+
+    public static CryptoId<T> From(T id) => new(id);
 
     public static CryptoId<T> Decode(string s) =>
     TryParse(s, out var result)
@@ -127,6 +134,8 @@ public partial struct CryptoId<T>
             : lengthForEncode == CryptoIdContext.Default.TryEncode(_value, userKey, result);
     }
 
+    public override string ToString() => new(Encode());
+
     public static implicit operator CryptoId<T>(T value) => new(value);
     public static implicit operator CryptoId<T>?(T? value) => value.HasValue ? new(value.Value) : null;
     public static implicit operator T(CryptoId<T> cryptoId) => cryptoId._value;
@@ -146,4 +155,6 @@ public partial struct CryptoId<T>
     public static explicit operator char[]?(CryptoId<T>? cryptoId) => cryptoId?.Encode();
     public static explicit operator byte[](CryptoId<T> cryptoId) => cryptoId.EncodeBytes();
     public static explicit operator byte[]?(CryptoId<T>? cryptoId) => cryptoId?.EncodeBytes();
+    public static explicit operator string(CryptoId<T> cryptoId) => cryptoId.ToString();
+    public static explicit operator string?(CryptoId<T>? cryptoId) => cryptoId?.ToString();
 }
