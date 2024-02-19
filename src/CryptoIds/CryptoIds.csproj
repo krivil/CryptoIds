@@ -9,7 +9,7 @@
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>CryptoIds</PackageId>
-    <Version>0.1.0-alpha</Version>
+    <Version>0.2.0-prerelease</Version>
     <Authors>krivil</Authors>
     <Description>Obfuscate sequential IDs</Description>
     <RepositoryUrl>https://github.com/krivil/CryptoIds</RepositoryUrl>
