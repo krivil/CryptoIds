@@ -11,109 +11,147 @@ public static class IdOperations
 
     public static bool TryDecodeAndValidate<T>(ReadOnlySpan<char> encoded, ReadOnlySpan<byte> key, ISignatureProvider signer, out T result) where T : unmanaged
     {
-        int sizeOfId = Unsafe.SizeOf<T>();
-        int arraySizeRequired = Base64UrlStringEncoder.GetMaximumRequiredLengthForDecode(encoded);
+        var encodedLen = System.Text.Encoding.UTF8.GetByteCount(encoded);
 
-        byte[]? bufferToReturnToPool = null;
+        Span<byte> encodedBytes = encodedLen <= StackAllocThreshold
+            ? stackalloc byte[encodedLen]
+            : new byte[encodedLen];
 
-        Span<byte> buffer = arraySizeRequired <= StackAllocThreshold
-            ? stackalloc byte[arraySizeRequired]
-            : bufferToReturnToPool = ArrayPool<byte>.Shared.Rent(arraySizeRequired);
-        try
-        {
-            int bytesWritten = Base64UrlStringEncoder.Decode(encoded, buffer);
-            if (bytesWritten == 0 || bytesWritten < sizeOfId)
-            {
-                result = default;
-                return false;
-            }
+        System.Text.Encoding.UTF8.GetBytes(encoded, encodedBytes);
 
-            Span<byte> idSpan = buffer[..sizeOfId];
-            idSpan.Reverse(); // little endian to big endian - helps with sorting
+        Span<byte> signature = stackalloc byte[signer.SignatureLength];
 
-            result = Unsafe.ReadUnaligned<T>(ref MemoryMarshal.GetReference(idSpan));
+        bool success = Base64.TryDecodeFromUtf8(encodedBytes, out result, signature, out int signatureBytesWritten);
 
-            var signature = buffer[sizeOfId..bytesWritten];
+        if (!success) return false;
 
-            return signer.Verify(result, key, signature);
-        }
-        finally
-        {
-            if (bufferToReturnToPool != null)
-            {
-                ArrayPool<byte>.Shared.Return(bufferToReturnToPool);
-            }
-        }
+        signature = signature[..signatureBytesWritten];
+
+        return signer.Verify(result, key, signature);
+
+        //int sizeOfId = Unsafe.SizeOf<T>();
+        //int arraySizeRequired = Base64UrlStringEncoder.GetMaximumRequiredLengthForDecode(encoded);
+
+        //byte[]? bufferToReturnToPool = null;
+
+        //Span<byte> buffer = arraySizeRequired <= StackAllocThreshold
+        //    ? stackalloc byte[arraySizeRequired]
+        //    : bufferToReturnToPool = ArrayPool<byte>.Shared.Rent(arraySizeRequired);
+        //try
+        //{
+        //    int bytesWritten = Base64UrlStringEncoder.Decode(encoded, buffer);
+        //    if (bytesWritten == 0 || bytesWritten < sizeOfId)
+        //    {
+        //        result = default;
+        //        return false;
+        //    }
+
+        //    Span<byte> idSpan = buffer[..sizeOfId];
+        //    idSpan.Reverse(); // little endian to big endian - helps with sorting
+
+        //    result = Unsafe.ReadUnaligned<T>(ref MemoryMarshal.GetReference(idSpan));
+
+        //    var signature = buffer[sizeOfId..bytesWritten];
+
+        //    return signer.Verify(result, key, signature);
+        //}
+        //finally
+        //{
+        //    if (bufferToReturnToPool != null)
+        //    {
+        //        ArrayPool<byte>.Shared.Return(bufferToReturnToPool);
+        //    }
+        //}
     }
 
     public static bool TryDecodeAndValidate<T>(ReadOnlySpan<byte> encoded, ReadOnlySpan<byte> key, ISignatureProvider signer, out T result) where T : unmanaged
     {
-        int sizeOfId = Unsafe.SizeOf<T>();
-        int arraySizeRequired = Base64UrlStringEncoder.GetMaximumRequiredLengthForDecode(encoded);
+        Span<byte> signature = stackalloc byte[signer.SignatureLength];
 
-        byte[]? bufferToReturnToPool = null;
+        bool success = Base64.TryDecodeFromUtf8(encoded, out result, signature, out int signatureBytesWritten);
 
-        Span<byte> buffer = arraySizeRequired <= StackAllocThreshold
-            ? stackalloc byte[arraySizeRequired]
-            : bufferToReturnToPool = ArrayPool<byte>.Shared.Rent(arraySizeRequired);
-        try
-        {
-            int bytesWritten = Base64UrlStringEncoder.Decode(encoded, buffer);
-            if (bytesWritten == 0 || bytesWritten < sizeOfId)
-            {
-                result = default;
-                return false;
-            }
+        if (!success) return false;
 
-            Span<byte> idSpan = buffer[..sizeOfId];
-            idSpan.Reverse(); // little endian to big endian - helps with sorting
+        signature = signature[..signatureBytesWritten];
 
-            result = Unsafe.ReadUnaligned<T>(ref MemoryMarshal.GetReference(idSpan));
+        return signer.Verify(result, key, signature);
 
-            var signature = buffer[sizeOfId..bytesWritten];
 
-            return signer.Verify(result, key, signature);
-        }
-        finally
-        {
-            if (bufferToReturnToPool != null)
-            {
-                ArrayPool<byte>.Shared.Return(bufferToReturnToPool);
-            }
-        }
+        //int sizeOfId = Unsafe.SizeOf<T>();
+        //int arraySizeRequired = Base64UrlStringEncoder.GetMaximumRequiredLengthForDecode(encoded);
+
+        //byte[]? bufferToReturnToPool = null;
+
+        //Span<byte> buffer = arraySizeRequired <= StackAllocThreshold
+        //    ? stackalloc byte[arraySizeRequired]
+        //    : bufferToReturnToPool = ArrayPool<byte>.Shared.Rent(arraySizeRequired);
+        //try
+        //{
+        //    int bytesWritten = Base64UrlStringEncoder.Decode(encoded, buffer);
+        //    if (bytesWritten == 0 || bytesWritten < sizeOfId)
+        //    {
+        //        result = default;
+        //        return false;
+        //    }
+
+        //    Span<byte> idSpan = buffer[..sizeOfId];
+        //    idSpan.Reverse(); // little endian to big endian - helps with sorting
+
+        //    result = Unsafe.ReadUnaligned<T>(ref MemoryMarshal.GetReference(idSpan));
+
+        //    var signature = buffer[sizeOfId..bytesWritten];
+
+        //    return signer.Verify(result, key, signature);
+        //}
+        //finally
+        //{
+        //    if (bufferToReturnToPool != null)
+        //    {
+        //        ArrayPool<byte>.Shared.Return(bufferToReturnToPool);
+        //    }
+        //}
     }
 
     public static bool TryDecodeAndXorAndValidate<T>(ReadOnlySpan<char> encoded, ReadOnlySpan<byte> key, ReadOnlySpan<byte> keyXor, ISignatureProvider signer, out T result) where T : unmanaged
     {
-        byte[]? bufferToReturnToPool = null;
         int byteCount = Encoding.UTF8.GetByteCount(encoded);
         Span<byte> buffer = byteCount <= StackAllocThreshold
             ? stackalloc byte[byteCount]
-            : bufferToReturnToPool = ArrayPool<byte>.Shared.Rent(byteCount);
-        try
-        {
-            int bytesWritten = Encoding.UTF8.GetBytes(encoded, buffer);
-            if (bytesWritten == 0)
-            {
-                result = default;
-                return false;
-            }
+            : new byte[byteCount];
 
-            return TryDecodeAndXorAndValidate(buffer[..bytesWritten], key, keyXor, signer, out result);
-        }
-        finally
-        {
-            if (bufferToReturnToPool != null)
-            {
-                ArrayPool<byte>.Shared.Return(bufferToReturnToPool);
-            }
-        }
+        Encoding.UTF8.GetBytes(encoded, buffer);
+
+        return TryDecodeAndXorAndValidate(buffer, key, keyXor, signer, out result);
+
+        //byte[]? bufferToReturnToPool = null;
+        //int byteCount = Encoding.UTF8.GetByteCount(encoded);
+        //Span<byte> buffer = byteCount <= StackAllocThreshold
+        //    ? stackalloc byte[byteCount]
+        //    : bufferToReturnToPool = ArrayPool<byte>.Shared.Rent(byteCount);
+        //try
+        //{
+        //    int bytesWritten = Encoding.UTF8.GetBytes(encoded, buffer);
+        //    if (bytesWritten == 0)
+        //    {
+        //        result = default;
+        //        return false;
+        //    }
+
+        //    return TryDecodeAndXorAndValidate(buffer[..bytesWritten], key, keyXor, signer, out result);
+        //}
+        //finally
+        //{
+        //    if (bufferToReturnToPool != null)
+        //    {
+        //        ArrayPool<byte>.Shared.Return(bufferToReturnToPool);
+        //    }
+        //}
     }
 
     public static bool TryDecodeAndXorAndValidate<T>(ReadOnlySpan<byte> encoded, ReadOnlySpan<byte> key, ReadOnlySpan<byte> keyXor, ISignatureProvider signer, out T result) where T : unmanaged
     {
         int sizeOfId = Unsafe.SizeOf<T>();
-        int arraySizeRequired = Base64UrlStringEncoder.GetMaximumRequiredLengthForDecode(encoded);
+        int arraySizeRequired = Base64.GetMaxByteCountForDecoding(encoded.Length);
 
         byte[]? bufferToReturnToPool = null;
 
@@ -122,7 +160,7 @@ public static class IdOperations
             : bufferToReturnToPool = ArrayPool<byte>.Shared.Rent(arraySizeRequired);
         try
         {
-            int bytesWritten = Base64UrlStringEncoder.Decode(encoded, buffer);
+            Base64.DecodeFromUtf8(encoded, buffer, out int bytesConsumed, out int bytesWritten);
             if (bytesWritten == 0 || bytesWritten < sizeOfId)
             {
                 result = default;
@@ -132,16 +170,11 @@ public static class IdOperations
             // id -> (id,signature) -> id = id ^ signature ^ keyXor
             XorEncryptor.XorInline(buffer[..sizeOfId], buffer[sizeOfId..bytesWritten], keyXor);
 
-            if (!MemoryMarshal.TryRead(buffer[..sizeOfId], out T id))
-            {
-                result = default;
-                return false;
-            }
-            result = id;
+            result = Unsafe.ReadUnaligned<T>(ref MemoryMarshal.GetReference(buffer[..sizeOfId]));
 
             var signature = buffer[sizeOfId..bytesWritten];
 
-            return signer.Verify(id, key, signature);
+            return signer.Verify(result, key, signature);
         }
         finally
         {
@@ -150,6 +183,45 @@ public static class IdOperations
                 ArrayPool<byte>.Shared.Return(bufferToReturnToPool);
             }
         }
+
+        //int sizeOfId = Unsafe.SizeOf<T>();
+        //int arraySizeRequired = Base64UrlStringEncoder.GetMaximumRequiredLengthForDecode(encoded);
+
+        //byte[]? bufferToReturnToPool = null;
+
+        //Span<byte> buffer = arraySizeRequired <= StackAllocThreshold
+        //    ? stackalloc byte[arraySizeRequired]
+        //    : bufferToReturnToPool = ArrayPool<byte>.Shared.Rent(arraySizeRequired);
+        //try
+        //{
+        //    int bytesWritten = Base64UrlStringEncoder.Decode(encoded, buffer);
+        //    if (bytesWritten == 0 || bytesWritten < sizeOfId)
+        //    {
+        //        result = default;
+        //        return false;
+        //    }
+
+        //    // id -> (id,signature) -> id = id ^ signature ^ keyXor
+        //    XorEncryptor.XorInline(buffer[..sizeOfId], buffer[sizeOfId..bytesWritten], keyXor);
+
+        //    if (!MemoryMarshal.TryRead(buffer[..sizeOfId], out T id))
+        //    {
+        //        result = default;
+        //        return false;
+        //    }
+        //    result = id;
+
+        //    var signature = buffer[sizeOfId..bytesWritten];
+
+        //    return signer.Verify(id, key, signature);
+        //}
+        //finally
+        //{
+        //    if (bufferToReturnToPool != null)
+        //    {
+        //        ArrayPool<byte>.Shared.Return(bufferToReturnToPool);
+        //    }
+        //}
     }
 
     public static bool TryDecodeAndXorAndValidate<T>(ReadOnlySpan<char> encoded, ReadOnlySpan<byte> key, ReadOnlySpan<byte> keyXor, Guid session, ISignatureProvider signer, out T result) where T : unmanaged
@@ -182,7 +254,7 @@ public static class IdOperations
     public static bool TryDecodeAndXorAndValidate<T>(ReadOnlySpan<byte> encoded, ReadOnlySpan<byte> key, ReadOnlySpan<byte> keyXor, Guid session, ISignatureProvider signer, out T result) where T : unmanaged
     {
         int sizeOfId = Unsafe.SizeOf<T>();
-        int arraySizeRequired = Base64UrlStringEncoder.GetMaximumRequiredLengthForDecode(encoded);
+        int arraySizeRequired = Base64.GetMaxByteCountForDecoding(encoded.Length);
 
         byte[]? bufferToReturnToPool = null;
 
@@ -191,7 +263,7 @@ public static class IdOperations
             : bufferToReturnToPool = ArrayPool<byte>.Shared.Rent(arraySizeRequired);
         try
         {
-            int bytesWritten = Base64UrlStringEncoder.Decode(encoded, buffer);
+            Base64.DecodeFromUtf8(encoded, buffer, out int bytesConsumed, out int bytesWritten);
             if (bytesWritten == 0 || bytesWritten < sizeOfId)
             {
                 result = default;
@@ -222,129 +294,177 @@ public static class IdOperations
                 ArrayPool<byte>.Shared.Return(bufferToReturnToPool);
             }
         }
+
+        //int sizeOfId = Unsafe.SizeOf<T>();
+        //int arraySizeRequired = Base64UrlStringEncoder.GetMaximumRequiredLengthForDecode(encoded);
+
+        //byte[]? bufferToReturnToPool = null;
+
+        //Span<byte> buffer = arraySizeRequired <= StackAllocThreshold
+        //    ? stackalloc byte[arraySizeRequired]
+        //    : bufferToReturnToPool = ArrayPool<byte>.Shared.Rent(arraySizeRequired);
+        //try
+        //{
+        //    int bytesWritten = Base64UrlStringEncoder.Decode(encoded, buffer);
+        //    if (bytesWritten == 0 || bytesWritten < sizeOfId)
+        //    {
+        //        result = default;
+        //        return false;
+        //    }
+
+        //    Span<byte> sessionKeySpan = stackalloc byte[16];
+        //    _ = session.TryWriteBytes(sessionKeySpan);
+
+        //    // id -> (id,signature) -> id = id ^ signature ^ keyXor
+        //    XorEncryptor.XorInline(buffer[..sizeOfId], buffer[sizeOfId..bytesWritten], keyXor, sessionKeySpan);
+
+        //    if (!MemoryMarshal.TryRead(buffer[..sizeOfId], out T id))
+        //    {
+        //        result = default;
+        //        return false;
+        //    }
+        //    result = id;
+
+        //    var signature = buffer[sizeOfId..bytesWritten];
+
+        //    return signer.Verify(id, key, signature);
+        //}
+        //finally
+        //{
+        //    if (bufferToReturnToPool != null)
+        //    {
+        //        ArrayPool<byte>.Shared.Return(bufferToReturnToPool);
+        //    }
+        //}
     }
 
     public static int GetRequiredLengthForEncode<T>(ISignatureProvider signer) where T : unmanaged
     {
-        int sizeOfIdInBytes = Unsafe.SizeOf<T>();
-        int requiredLengthForEncode = Base64UrlStringEncoder.GetRequiredLengthForEncode(sizeOfIdInBytes + signer.SignatureLength);
+        int requiredLengthForEncode = Base64.GetMaxByteCountForEncoding<T>(signer.SignatureLength);
         return requiredLengthForEncode;
     }
 
     public static int TrySignAndEncode<T>(T id, ReadOnlySpan<byte> key, ISignatureProvider signer, Span<char> encodedResult) where T : unmanaged
     {
-        int sizeOfIdInBytes = Unsafe.SizeOf<T>();
-        int requiredLengthForEncode = Base64UrlStringEncoder.GetRequiredLengthForEncode(sizeOfIdInBytes + signer.SignatureLength);
-
-        if (encodedResult.Length < requiredLengthForEncode)
+        int sizeOfBuffer = Base64.GetMaxByteCountForEncoding<T>(signer.SignatureLength);
+        if (encodedResult.Length < sizeOfBuffer)
         {
-            return -1 * requiredLengthForEncode;
+            return -1 * sizeOfBuffer;
         }
 
-        byte[]? bufferToReturnToPool = null;
+        Span<byte> signature = stackalloc byte[signer.SignatureLength]; // maximum is 64 bytes
+        _ = signer.Sign(id, key, signature);
 
-        Span<byte> encoded = requiredLengthForEncode <= StackAllocThreshold
-            ? stackalloc byte[requiredLengthForEncode]
-            : bufferToReturnToPool = ArrayPool<byte>.Shared.Rent(requiredLengthForEncode);
+        Span<byte> buffer = sizeOfBuffer <= StackAllocThreshold
+            ? stackalloc byte[sizeOfBuffer]
+            : new byte[sizeOfBuffer];
 
-        try
-        {
-            int bytesWritten = TrySignAndEncode(id, key, signer, encoded);
+        bool success = Base64.TryEncodeToUtf8(id, signature, buffer, out int bytesWritten);
 
-            return Encoding.UTF8.GetChars(encoded[..bytesWritten], encodedResult);
-        }
-        finally
-        {
-            if (bufferToReturnToPool != null)
-            {
-                ArrayPool<byte>.Shared.Return(bufferToReturnToPool);
-            }
-        }
+        if (!success) return bytesWritten;
+
+        Encoding.UTF8.GetChars(buffer[..bytesWritten], encodedResult);
+
+        return bytesWritten;
+
+        //int sizeOfIdInBytes = Unsafe.SizeOf<T>();
+        //int requiredLengthForEncode = Base64UrlStringEncoder.GetRequiredLengthForEncode(sizeOfIdInBytes + signer.SignatureLength);
+
+        //if (encodedResult.Length < requiredLengthForEncode)
+        //{
+        //    return -1 * requiredLengthForEncode;
+        //}
+
+        //byte[]? bufferToReturnToPool = null;
+
+        //Span<byte> encoded = requiredLengthForEncode <= StackAllocThreshold
+        //    ? stackalloc byte[requiredLengthForEncode]
+        //    : bufferToReturnToPool = ArrayPool<byte>.Shared.Rent(requiredLengthForEncode);
+
+        //try
+        //{
+        //    int bytesWritten = TrySignAndEncode(id, key, signer, encoded);
+
+        //    return Encoding.UTF8.GetChars(encoded[..bytesWritten], encodedResult);
+        //}
+        //finally
+        //{
+        //    if (bufferToReturnToPool != null)
+        //    {
+        //        ArrayPool<byte>.Shared.Return(bufferToReturnToPool);
+        //    }
+        //}
     }
 
     public static int TrySignAndEncode<T>(T id, ReadOnlySpan<byte> key, ISignatureProvider signer, Span<byte> encodedResult) where T : unmanaged
     {
-        int sizeOfIdInBytes = Unsafe.SizeOf<T>();
-        int requiredLengthForEncode = Base64UrlStringEncoder.GetRequiredLengthForEncode(sizeOfIdInBytes + signer.SignatureLength);
-
-        if (encodedResult.Length < requiredLengthForEncode)
+        int sizeOfBuffer = Base64.GetMaxByteCountForEncoding<T>(signer.SignatureLength);
+        if (encodedResult.Length < sizeOfBuffer)
         {
-            return -1 * requiredLengthForEncode;
+            return -1 * sizeOfBuffer;
         }
-
-        Span<byte> spanIdAsBytes = stackalloc byte[sizeOfIdInBytes];
-        Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(spanIdAsBytes), id);
-        spanIdAsBytes.Reverse(); // little endian to big endian - helps with sorting
 
         Span<byte> signature = stackalloc byte[signer.SignatureLength]; // maximum is 64 bytes
         _ = signer.Sign(id, key, signature);
+        
+        Span<byte> buffer = sizeOfBuffer <= StackAllocThreshold
+            ? stackalloc byte[sizeOfBuffer]
+            : new byte[sizeOfBuffer];
 
-        Span<byte> buffer = stackalloc byte[spanIdAsBytes.Length + signature.Length];
-        spanIdAsBytes.CopyTo(buffer);
-        signature.CopyTo(buffer[spanIdAsBytes.Length..]);
+        bool success = Base64.TryEncodeToUtf8(id, signature, buffer, out int bytesWritten);
 
-        return Base64UrlStringEncoder.Encode(buffer, encodedResult);
+        if (!success) return bytesWritten;
+
+        buffer[..bytesWritten].CopyTo(encodedResult);
+
+        return bytesWritten;
+
+        //int sizeOfIdInBytes = Unsafe.SizeOf<T>();
+        //int requiredLengthForEncode = Base64UrlStringEncoder.GetRequiredLengthForEncode(sizeOfIdInBytes + signer.SignatureLength);
+
+        //if (encodedResult.Length < requiredLengthForEncode)
+        //{
+        //    return -1 * requiredLengthForEncode;
+        //}
+
+        //Span<byte> spanIdAsBytes = stackalloc byte[sizeOfIdInBytes];
+        //Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(spanIdAsBytes), id);
+        //spanIdAsBytes.Reverse(); // little endian to big endian - helps with sorting
+
+        //Span<byte> signature = stackalloc byte[signer.SignatureLength]; // maximum is 64 bytes
+        //_ = signer.Sign(id, key, signature);
+
+        //Span<byte> buffer = stackalloc byte[spanIdAsBytes.Length + signature.Length];
+        //spanIdAsBytes.CopyTo(buffer);
+        //signature.CopyTo(buffer[spanIdAsBytes.Length..]);
+
+        //return Base64UrlStringEncoder.Encode(buffer, encodedResult);
     }
 
     public static int TrySignAndXorAndEncode<T>(T id, ReadOnlySpan<byte> key, ReadOnlySpan<byte> keyXor, ISignatureProvider signer, Span<char> encodedResult) where T : unmanaged
     {
-        int sizeOfIdInBytes = Unsafe.SizeOf<T>();
-        int sizeOfAllInBytes = sizeOfIdInBytes + signer.SignatureLength;
-        int requiredLengthForEncode = Base64UrlStringEncoder.GetRequiredLengthForEncode(sizeOfAllInBytes);
+        Span<byte> resultBytes = stackalloc byte[encodedResult.Length];
 
-        if (encodedResult.Length < requiredLengthForEncode)
-        {
-            return -1 * requiredLengthForEncode;
-        }
+        int bytesWritten = TrySignAndXorAndEncode(id, key, keyXor, signer, resultBytes);
 
-        Span<byte> spanIdAsBytes = stackalloc byte[sizeOfIdInBytes];
-        MemoryMarshal.Write(spanIdAsBytes, in id);
+        if (bytesWritten <= 0) return bytesWritten;
 
-        Span<byte> signature = stackalloc byte[signer.SignatureLength]; // maximum is 64 bytes
-        _ = signer.Sign(id, key, signature);
-
-        Span<byte> buffer = stackalloc byte[sizeOfAllInBytes];
-        spanIdAsBytes.CopyTo(buffer);
-        signature.CopyTo(buffer[spanIdAsBytes.Length..]);
-
-        byte[]? bufferToReturnToPool = null;
-
-        Span<byte> encoded = requiredLengthForEncode <= StackAllocThreshold
-            ? stackalloc byte[requiredLengthForEncode]
-            : bufferToReturnToPool = ArrayPool<byte>.Shared.Rent(requiredLengthForEncode);
-
-        try
-        {
-            // id -> (id,signature) -> id = id ^ signature ^ keyXor
-            XorEncryptor.XorInline(buffer[..sizeOfIdInBytes], buffer[sizeOfIdInBytes..], keyXor);
-
-            int bytesWritten = Base64UrlStringEncoder.Encode(buffer, encoded);
-            return bytesWritten != requiredLengthForEncode || bytesWritten == 0
-                ? 0
-                : Encoding.UTF8.GetChars(encoded[..bytesWritten], encodedResult);
-        }
-        finally
-        {
-            if (bufferToReturnToPool != null)
-            {
-                ArrayPool<byte>.Shared.Return(bufferToReturnToPool);
-            }
-        }
+        return Encoding.UTF8.GetChars(resultBytes[..bytesWritten], encodedResult);
     }
 
     public static int TrySignAndXorAndEncode<T>(T id, ReadOnlySpan<byte> key, ReadOnlySpan<byte> keyXor, ISignatureProvider signer, Span<byte> encodedResult) where T : unmanaged
     {
         int sizeOfIdInBytes = Unsafe.SizeOf<T>();
         int sizeOfAllInBytes = sizeOfIdInBytes + signer.SignatureLength;
-        int requiredLengthForEncode = Base64UrlStringEncoder.GetRequiredLengthForEncode(sizeOfAllInBytes);
+        int requiredMaxLengthForEncode = Base64.GetMaxByteCountForEncoding(sizeOfAllInBytes);
 
-        if (encodedResult.Length < requiredLengthForEncode)
+        if (encodedResult.Length < requiredMaxLengthForEncode)
         {
-            return -1 * requiredLengthForEncode;
+            return -1 * requiredMaxLengthForEncode;
         }
 
         Span<byte> spanIdAsBytes = stackalloc byte[sizeOfIdInBytes];
-        MemoryMarshal.Write(spanIdAsBytes, in id);
+        Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(spanIdAsBytes), id);
 
         Span<byte> signature = stackalloc byte[signer.SignatureLength]; // maximum is 64 bytes
         _ = signer.Sign(id, key, signature);
@@ -356,70 +476,59 @@ public static class IdOperations
         // id -> (id,signature) -> id = id ^ signature ^ keyXor
         XorEncryptor.XorInline(buffer[..sizeOfIdInBytes], buffer[sizeOfIdInBytes..], keyXor);
 
-        return Base64UrlStringEncoder.Encode(buffer, encodedResult);
+        Base64.EncodeToUtf8(buffer, encodedResult, out int bytesConsumed, out int bytesWritten);
+
+        return bytesWritten;
+
+        //int sizeOfIdInBytes = Unsafe.SizeOf<T>();
+        //int sizeOfAllInBytes = sizeOfIdInBytes + signer.SignatureLength;
+        //int requiredLengthForEncode = Base64UrlStringEncoder.GetRequiredLengthForEncode(sizeOfAllInBytes);
+
+        //if (encodedResult.Length < requiredLengthForEncode)
+        //{
+        //    return -1 * requiredLengthForEncode;
+        //}
+
+        //Span<byte> spanIdAsBytes = stackalloc byte[sizeOfIdInBytes];
+        //MemoryMarshal.Write(spanIdAsBytes, in id);
+
+        //Span<byte> signature = stackalloc byte[signer.SignatureLength]; // maximum is 64 bytes
+        //_ = signer.Sign(id, key, signature);
+
+        //Span<byte> buffer = stackalloc byte[sizeOfAllInBytes];
+        //spanIdAsBytes.CopyTo(buffer);
+        //signature.CopyTo(buffer[spanIdAsBytes.Length..]);
+
+        //// id -> (id,signature) -> id = id ^ signature ^ keyXor
+        //XorEncryptor.XorInline(buffer[..sizeOfIdInBytes], buffer[sizeOfIdInBytes..], keyXor);
+
+        //return Base64UrlStringEncoder.Encode(buffer, encodedResult);
     }
 
     public static int TrySignAndXorAndEncode<T>(T id, ReadOnlySpan<byte> key, ReadOnlySpan<byte> keyXor, Guid sessionKey, ISignatureProvider signer, Span<char> encodedResult) where T : unmanaged
     {
-        int sizeOfIdInBytes = Unsafe.SizeOf<T>();
-        int sizeOfAllInBytes = sizeOfIdInBytes + signer.SignatureLength;
-        int requiredLengthForEncode = Base64UrlStringEncoder.GetRequiredLengthForEncode(sizeOfAllInBytes);
+        Span<byte> resultBytes = stackalloc byte[encodedResult.Length];
 
-        if (encodedResult.Length < requiredLengthForEncode)
-        {
-            return -1 * requiredLengthForEncode;
-        }
+        int bytesWritten = TrySignAndXorAndEncode(id, key, keyXor, sessionKey, signer, resultBytes);
 
-        Span<byte> spanIdAsBytes = stackalloc byte[sizeOfIdInBytes];
-        MemoryMarshal.Write(spanIdAsBytes, in id);
+        if (bytesWritten <= 0) return bytesWritten;
 
-        Span<byte> signature = stackalloc byte[signer.SignatureLength]; // maximum is 64 bytes
-        _ = signer.Sign(id, key, signature);
-
-        Span<byte> buffer = stackalloc byte[sizeOfAllInBytes];
-        spanIdAsBytes.CopyTo(buffer);
-        signature.CopyTo(buffer[spanIdAsBytes.Length..]);
-
-        byte[]? bufferToReturnToPool = null;
-
-        Span<byte> encoded = requiredLengthForEncode <= StackAllocThreshold
-            ? stackalloc byte[requiredLengthForEncode]
-            : bufferToReturnToPool = ArrayPool<byte>.Shared.Rent(requiredLengthForEncode);
-
-        try
-        {
-            Span<byte> sessionKeySpan = stackalloc byte[16];
-            _ = sessionKey.TryWriteBytes(sessionKeySpan);
-            // id -> (id,signature) -> id = id ^ signature ^ keyXor
-            XorEncryptor.XorInline(buffer[..sizeOfIdInBytes], buffer[sizeOfIdInBytes..], keyXor, sessionKeySpan);
-
-            int bytesWritten = Base64UrlStringEncoder.Encode(buffer, encoded);
-            return bytesWritten != requiredLengthForEncode || bytesWritten == 0
-                ? 0
-                : Encoding.UTF8.GetChars(encoded[..bytesWritten], encodedResult);
-        }
-        finally
-        {
-            if (bufferToReturnToPool != null)
-            {
-                ArrayPool<byte>.Shared.Return(bufferToReturnToPool);
-            }
-        }
+        return Encoding.UTF8.GetChars(resultBytes[..bytesWritten], encodedResult);
     }
 
     public static int TrySignAndXorAndEncode<T>(T id, ReadOnlySpan<byte> key, ReadOnlySpan<byte> keyXor, Guid sessionKey, ISignatureProvider signer, Span<byte> encodedResult) where T : unmanaged
     {
         int sizeOfIdInBytes = Unsafe.SizeOf<T>();
         int sizeOfAllInBytes = sizeOfIdInBytes + signer.SignatureLength;
-        int requiredLengthForEncode = Base64UrlStringEncoder.GetRequiredLengthForEncode(sizeOfAllInBytes);
+        int requiredMaxLengthForEncode = Base64.GetMaxByteCountForEncoding(sizeOfAllInBytes);
 
-        if (encodedResult.Length < requiredLengthForEncode)
+        if (encodedResult.Length < requiredMaxLengthForEncode)
         {
-            return -1 * requiredLengthForEncode;
+            return -1 * requiredMaxLengthForEncode;
         }
 
         Span<byte> spanIdAsBytes = stackalloc byte[sizeOfIdInBytes];
-        MemoryMarshal.Write(spanIdAsBytes, in id);
+        Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(spanIdAsBytes), id);
 
         Span<byte> signature = stackalloc byte[signer.SignatureLength]; // maximum is 64 bytes
         _ = signer.Sign(id, key, signature);
@@ -430,9 +539,38 @@ public static class IdOperations
 
         Span<byte> sessionKeySpan = stackalloc byte[16];
         _ = sessionKey.TryWriteBytes(sessionKeySpan);
+
         // id -> (id,signature) -> id = id ^ signature ^ keyXor
         XorEncryptor.XorInline(buffer[..sizeOfIdInBytes], buffer[sizeOfIdInBytes..], keyXor, sessionKeySpan);
 
-        return Base64UrlStringEncoder.Encode(buffer, encodedResult);
+        Base64.EncodeToUtf8(buffer, encodedResult, out int bytesConsumed, out int bytesWritten);
+
+        return bytesWritten;
+
+        //int sizeOfIdInBytes = Unsafe.SizeOf<T>();
+        //int sizeOfAllInBytes = sizeOfIdInBytes + signer.SignatureLength;
+        //int requiredLengthForEncode = Base64UrlStringEncoder.GetRequiredLengthForEncode(sizeOfAllInBytes);
+
+        //if (encodedResult.Length < requiredLengthForEncode)
+        //{
+        //    return -1 * requiredLengthForEncode;
+        //}
+
+        //Span<byte> spanIdAsBytes = stackalloc byte[sizeOfIdInBytes];
+        //MemoryMarshal.Write(spanIdAsBytes, in id);
+
+        //Span<byte> signature = stackalloc byte[signer.SignatureLength]; // maximum is 64 bytes
+        //_ = signer.Sign(id, key, signature);
+
+        //Span<byte> buffer = stackalloc byte[sizeOfAllInBytes];
+        //spanIdAsBytes.CopyTo(buffer);
+        //signature.CopyTo(buffer[spanIdAsBytes.Length..]);
+
+        //Span<byte> sessionKeySpan = stackalloc byte[16];
+        //_ = sessionKey.TryWriteBytes(sessionKeySpan);
+        //// id -> (id,signature) -> id = id ^ signature ^ keyXor
+        //XorEncryptor.XorInline(buffer[..sizeOfIdInBytes], buffer[sizeOfIdInBytes..], keyXor, sessionKeySpan);
+
+        //return Base64UrlStringEncoder.Encode(buffer, encodedResult);
     }
 }
