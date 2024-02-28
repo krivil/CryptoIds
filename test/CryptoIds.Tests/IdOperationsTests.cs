@@ -1,18 +1,48 @@
 namespace CryptoIds.Tests;
 
+using System.Text;
+
 public class IdOperationsTests
 {
     private static void TestSignAndVerify<T>(T id, byte[] key, ISignatureProvider provider)
         where T : unmanaged
     {
+        // bytes
+        Span<byte> outputB = stackalloc byte[IdOperations.GetRequiredLengthForEncode<T>(provider)];
+        int bytesWrittenB = IdOperations.TrySignAndEncode(id, key, provider, outputB);
+        Assert.True(bytesWrittenB > 0, "bytesWritten > 0");
+
+        var encodedB = outputB[..bytesWrittenB];
+        string charsB = Encoding.UTF8.GetString(encodedB);
+
+        bool successB = IdOperations.TryDecodeAndValidate(encodedB, key, provider, out T decodedB);
+        Assert.True(successB, "success bytes");
+        Assert.Equal(id, decodedB);
+
+        // chars
         Span<char> output = stackalloc char[IdOperations.GetRequiredLengthForEncode<T>(provider)];
         int bytesWritten = IdOperations.TrySignAndEncode(id, key, provider, output);
-        Assert.True(bytesWritten > 0, "bytesWritten > 0");
+        Assert.True(bytesWritten > 0, "charsWritten > 0");
 
         var encoded = output[..bytesWritten];
         bool success = IdOperations.TryDecodeAndValidate(encoded, key, provider, out T decoded);
-        Assert.True(success, "success");
+        Assert.True(success, "success chars");
         Assert.Equal(id, decoded);
+    }
+
+    [Fact]
+    public void TestSignAndVerifyXxHash32_s()
+    {
+        var provider = SignatureProviderType.XxHash32.ToSignatureProvider();
+        Random random = new(681);
+        byte[] key = new byte[128];
+        random.NextBytes(key);
+
+        for (int i = 0; i < 1000; i++)
+        {
+            long id = i;
+            TestSignAndVerify(id, key, provider);
+        }
     }
 
     [Fact]
