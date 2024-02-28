@@ -146,7 +146,7 @@ public class IdOperationsTests
 
         for (int i = 0; i < 1000; i++)
         {
-            long id = random.Next();
+            (int, int) id = (random.Next(), random.Next());
             TestSignAndVerify(id, key, provider);
         }
     }
@@ -161,7 +161,37 @@ public class IdOperationsTests
 
         _ = Parallel.For(0, 1000, _ =>
         {
-            long id = random.Next();
+            (int, int) id = (random.Next(), random.Next());
+            TestSignAndVerify(id, key, provider);
+        });
+    }
+
+    [Fact]
+    public void TestInt32SignAndVerifyMd5()
+    {
+        var provider = SignatureProviderType.Md5.ToSignatureProvider();
+        Random random = new(681);
+        byte[] key = new byte[128];
+        random.NextBytes(key);
+
+        for (int i = 0; i < 1000; i++)
+        {
+            int id = random.Next();
+            TestSignAndVerify(id, key, provider);
+        }
+    }
+
+    [Fact]
+    public void TestInt32SignAndVerifyMd5MultiThreaded()
+    {
+        var provider = SignatureProviderType.Md5.ToSignatureProvider();
+        Random random = new(681);
+        byte[] key = new byte[128];
+        random.NextBytes(key);
+
+        _ = Parallel.For(0, 1000, _ =>
+        {
+            int id = random.Next();
             TestSignAndVerify(id, key, provider);
         });
     }
@@ -182,7 +212,7 @@ public class IdOperationsTests
     }
 
     [Fact]
-    public void TestSignAndVerifySha1MultiThreaded()
+    public void TestTupleSignAndVerifySha1MultiThreaded()
     {
         var provider = SignatureProviderType.Sha1.ToSignatureProvider();
         Random random = new(681);
@@ -197,7 +227,7 @@ public class IdOperationsTests
     }
 
     [Fact]
-    public void TestSignAndVerifySha256()
+    public void TestTupleSignAndVerifySha256()
     {
         var provider = SignatureProviderType.Sha256.ToSignatureProvider();
         Random random = new(681);
@@ -209,6 +239,36 @@ public class IdOperationsTests
             long id = random.Next();
             TestSignAndVerify(id, key, provider);
         }
+    }
+
+    [Fact]
+    public void TestGuidSignAndVerifyMd5()
+    {
+        var provider = SignatureProviderType.Md5.ToSignatureProvider();
+        Random random = new(681);
+        byte[] key = new byte[128];
+        random.NextBytes(key);
+
+        for (int i = 0; i < 1000; i++)
+        {
+            Guid id = Guid.NewGuid();
+            TestSignAndVerify(id, key, provider);
+        }
+    }
+
+    [Fact]
+    public void TestGuidSignAndVerifyMd5MultiThreaded()
+    {
+        var provider = SignatureProviderType.Md5.ToSignatureProvider();
+        Random random = new(681);
+        byte[] key = new byte[128];
+        random.NextBytes(key);
+
+        _ = Parallel.For(0, 1000, _ =>
+        {
+            Guid id = Guid.NewGuid();
+            TestSignAndVerify(id, key, provider);
+        });
     }
 
     [Fact]

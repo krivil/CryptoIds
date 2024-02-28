@@ -33,7 +33,7 @@ public static partial class Base64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetMaxByteCountForEncoding<T>(int signatureLength = 0) where T : unmanaged
     {
-        int typeSize = Marshal.SizeOf<T>();
+        int typeSize = Unsafe.SizeOf<T>();
         int inputLength = typeSize + signatureLength;
         int resultMaxLength = GetMaxByteCountForEncoding(inputLength);
         return resultMaxLength;
@@ -70,7 +70,7 @@ public static partial class Base64
     public static bool TryEncodeToUtf8<T>(T value, ReadOnlySpan<byte> signature, Span<byte> buffer,
         out int bytesWritten)
     {
-        int valueSize = Marshal.SizeOf(value);
+        int valueSize = Unsafe.SizeOf<T>();
 
         Span<byte> valueBytes = stackalloc byte[valueSize];
 
@@ -231,7 +231,7 @@ public static partial class Base64
 
         Span<byte> buffer = stackalloc byte[maxBufferSize];
 
-        int typeSize = Marshal.SizeOf<T>();
+        int typeSize = Unsafe.SizeOf<T>();
 
         if (TryDecodeFromUtf8(encoded, buffer, out int allBytesWritten))
         {
@@ -254,7 +254,7 @@ public static partial class Base64
 
         Span<byte> buffer = stackalloc byte[maxBufferSize];
 
-        int typeSize = Marshal.SizeOf<T>();
+        int typeSize = Unsafe.SizeOf<T>();
 
         if (TryDecodeFromUtf8(encoded, buffer, out int allBytesWritten))
         {
