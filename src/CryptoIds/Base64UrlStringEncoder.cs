@@ -27,8 +27,7 @@ public static partial class Base64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetMaxByteCountForEncoding(int inputLength)
     {
-        int resultMaxLength = GetMaxEncodedToUtf8Length(inputLength);
-        return resultMaxLength;
+        return ((inputLength + 2) / 3) * 4;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -36,7 +35,7 @@ public static partial class Base64
     {
         int typeSize = Marshal.SizeOf<T>();
         int inputLength = typeSize + signatureLength;
-        int resultMaxLength = GetMaxEncodedToUtf8Length(inputLength);
+        int resultMaxLength = GetMaxByteCountForEncoding(inputLength);
         return resultMaxLength;
     }
 
@@ -46,7 +45,7 @@ public static partial class Base64
     {
         int valueSize = value.Length;
         int bufferSize = valueSize + signature.Length;
-        int resultMaxLength = Base64.GetMaxEncodedToUtf8Length(bufferSize);
+        int resultMaxLength = GetMaxByteCountForEncoding(bufferSize);
 
         if (buffer.Length < resultMaxLength)
         {
@@ -858,8 +857,8 @@ InvalidDataExit:
 
     private static OperationStatus DecodeWithWhiteSpaceBlockwise(ReadOnlySpan<byte> utf8, Span<byte> bytes, ref int bytesConsumed, ref int bytesWritten, bool isFinalBlock = true)
     {
-        const int BlockSize = 4;
-        Span<byte> buffer = stackalloc byte[BlockSize];
+        const int blockSize = 4;
+        Span<byte> buffer = stackalloc byte[blockSize];
         OperationStatus status = OperationStatus.Done;
 
         while (!utf8.IsEmpty)
@@ -889,7 +888,7 @@ InvalidDataExit:
                 continue;
             }
 
-            bool hasAnotherBlock = utf8.Length >= BlockSize && bufferIdx == BlockSize;
+            bool hasAnotherBlock = utf8.Length >= blockSize && bufferIdx == blockSize;
             bool localIsFinalBlock = !hasAnotherBlock;
 
             // If this block contains padding and there's another block, then only whitespace may follow for being valid.
@@ -1016,9 +1015,9 @@ InvalidDataExit:
         {
             // For description see https://github.com/dotnet/runtime/blob/48e74187cb15386c29eedaa046a5ee2c7ddef161/src/libraries/Common/src/System/HexConverter.cs#L314-L330
             // Lookup bit mask for "\t\n\r ".
-            const ulong MagicConstant = 0xC800010000000000UL;
+            const ulong magicConstant = 0xC800010000000000UL;
             ulong i = (uint) value - '\t';
-            ulong shift = MagicConstant << (int) i;
+            ulong shift = magicConstant << (int) i;
             ulong mask = i - 64;
             return (long) (shift & mask) < 0;
         }
@@ -1056,6 +1055,7 @@ InvalidDataExit:
     //];
 
     private const sbyte InvalidByte = -1; // Designating -1 for invalid bytes in the decoding map
+
     private static sbyte[] GenerateDecodingMap()
     {
         sbyte[] data = new sbyte[256]; // 0 to byte.MaxValue (255)
