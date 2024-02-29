@@ -1,5 +1,7 @@
 namespace CryptoIds.Tests;
 
+using System.Globalization;
+
 public class CryptoIdContextTests
 {
     [Fact]
@@ -63,7 +65,37 @@ public class CryptoIdContextTests
     }
 
     [Fact]
-    public void TestXxHash32()
+    public void TestInt32XxHash32()
+    {
+        Random random = new(681);
+        Crypto2048BitKey keys = new();
+        random.NextBytes(keys);
+        var context = CryptoIdContext.Create(keys, SignatureProviderType.XxHash32, true);
+
+        for (int i = 0; i < 1000; i++)
+        {
+            int id = random.Next();
+            TestContext(context, id);
+        }
+    }
+
+    [Fact]
+    public void TestInt32XxHash32MultiThreaded()
+    {
+        Random random = new(681);
+        Crypto2048BitKey keys = new();
+        random.NextBytes(keys);
+        var context = CryptoIdContext.Create(keys, SignatureProviderType.XxHash32, true);
+
+        _ = Parallel.For(0, 1000, _ =>
+        {
+            int id = random.Next();
+            TestContext(context, id);
+        });
+    }
+
+    [Fact]
+    public void TestInt64XxHash32()
     {
         Random random = new(681);
         Crypto2048BitKey keys = new();
@@ -78,7 +110,7 @@ public class CryptoIdContextTests
     }
 
     [Fact]
-    public void TestXxHash32MultiThreaded()
+    public void TestInt64XxHash32MultiThreaded()
     {
         Random random = new(681);
         Crypto2048BitKey keys = new();
@@ -88,6 +120,96 @@ public class CryptoIdContextTests
         _ = Parallel.For(0, 1000, _ =>
         {
             long id = random.NextInt64();
+            TestContext(context, id);
+        });
+    }
+
+    [Fact]
+    public void TestGuidXxHash32()
+    {
+        Random random = new(681);
+        Crypto2048BitKey keys = new();
+        random.NextBytes(keys);
+        var context = CryptoIdContext.Create(keys, SignatureProviderType.XxHash32, true);
+
+        for (int i = 0; i < 1000; i++)
+        {
+            Guid id = Guid.NewGuid();
+            TestContext(context, id);
+        }
+    }
+
+    [Fact]
+    public void TestGuidXxHash32MultiThreaded()
+    {
+        Random random = new(681);
+        Crypto2048BitKey keys = new();
+        random.NextBytes(keys);
+        var context = CryptoIdContext.Create(keys, SignatureProviderType.XxHash32, true);
+
+        _ = Parallel.For(0, 1000, _ =>
+        {
+            Guid id = Guid.NewGuid();
+            TestContext(context, id);
+        });
+    }
+
+    [Fact]
+    public void TestTuple2LongsXxHash32()
+    {
+        Random random = new(681);
+        Crypto2048BitKey keys = new();
+        random.NextBytes(keys);
+        var context = CryptoIdContext.Create(keys, SignatureProviderType.XxHash32, true);
+
+        for (int i = 0; i < 1000; i++)
+        {
+            (long, long) id = (random.NextInt64(), random.NextInt64());
+            TestContext(context, id);
+        }
+    }
+
+    [Fact]
+    public void TestTuple2LongsXxHash32MultiThreaded()
+    {
+        Random random = new(681);
+        Crypto2048BitKey keys = new();
+        random.NextBytes(keys);
+        var context = CryptoIdContext.Create(keys, SignatureProviderType.XxHash32, true);
+
+        _ = Parallel.For(0, 1000, _ =>
+        {
+            (long, long) id = (random.NextInt64(), random.NextInt64());
+            TestContext(context, id);
+        });
+    }
+
+    [Fact]
+    public void TestTupleLongIntXxHash32()
+    {
+        Random random = new(681);
+        Crypto2048BitKey keys = new();
+        random.NextBytes(keys);
+        var context = CryptoIdContext.Create(keys, SignatureProviderType.XxHash32, true);
+
+        for (int i = 0; i < 1000; i++)
+        {
+            (long, int) id = (random.NextInt64(), random.Next());
+            TestContext(context, id);
+        }
+    }
+
+    [Fact]
+    public void TestTupleLongIntXxHash32MultiThreaded()
+    {
+        Random random = new(681);
+        Crypto2048BitKey keys = new();
+        random.NextBytes(keys);
+        var context = CryptoIdContext.Create(keys, SignatureProviderType.XxHash32, true);
+
+        _ = Parallel.For(0, 1000, _ =>
+        {
+            (long, int) id = (random.NextInt64(), random.Next());
             TestContext(context, id);
         });
     }
@@ -366,19 +488,29 @@ public class CryptoIdContextTests
         });
     }
 
-    private static void TestContext<T>(CryptoIdContext context, T id) where T : unmanaged
+    [Fact]
+    public void TestCustom()
     {
-        Span<char> chars = stackalloc char[context.GetRequiredLengthForEncode<T>()];
+        //CryptoIdContext.Default =
+        CryptoIdContext context = CryptoIdContext.CreateFromPassword("default_password");
+        (long, long) id = (638422103460673600, 102);
 
-        int bytesWritten = context.TryEncode(id, chars);
+        TestContext(context, id);
 
-        var encoded = chars[..bytesWritten];
+        string encoded = CryptoId.From(id).ToString(context);
+        bool success = CryptoId<(long, long)>.TryParse(encoded, context, out CryptoId<(long, long)> cid);
+        Assert.True(success);
 
-        Assert.True(bytesWritten == chars.Length, "bytesWritten == chars.Length");
-
-        bool verify = context.TryDecode(encoded, out T result);
+        (long, long) result = cid.GetValue();
 
         Assert.Equal(id, result);
-        Assert.True(verify, "verify");
+    }
+
+    private static void TestContext<T>(CryptoIdContext context, T id) where T : unmanaged
+    {
+        string encoded = CryptoId<T>.From(id).ToString(context);
+        T result = CryptoId<T>.Decode(encoded, context);
+
+        Assert.Equal(id, result);
     }
 }

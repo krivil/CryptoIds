@@ -36,8 +36,8 @@ public class CryptoIdJsonConverterFactory : JsonConverterFactory
         public override void Write(Utf8JsonWriter writer, CryptoId<T> value, JsonSerializerOptions options)
         {
             Span<byte> bytes = stackalloc byte[CryptoId<T>.GetLengthWhenEncoded()];
-            _ = value.TryEncode(bytes);
-            writer.WriteStringValue(bytes);
+            _ = value.TryEncode(bytes, out int bytesWritten);
+            writer.WriteStringValue(bytes[..bytesWritten]);
         }
     }
 }
